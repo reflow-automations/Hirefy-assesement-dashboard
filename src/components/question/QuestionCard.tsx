@@ -1,18 +1,35 @@
 import Link from "next/link";
 import { Check, ArrowUpRight } from "lucide-react";
-import type { Question, CorrectAnswer } from "@/lib/types";
+import type { Question } from "@/lib/types";
 import { normalizeBloom } from "@/lib/bloom";
 import { BloomBadge } from "./BloomBadge";
-import { TypeBadge } from "./TypeBadge";
+import { TypeBadge, DifficultyBadge } from "./TypeBadge";
 import { cn } from "@/lib/cn";
 
-const LETTERS: CorrectAnswer[] = ["a", "b", "c", "d"];
-
-const TYPE_BORDER: Record<string, string> = {
-  kennis: "border-l-teal",
+const ITEM_TYPE_BORDER: Record<string, string> = {
+  // Fase 2
+  MCQ:      "border-l-teal",
+  SJT:      "border-l-ochre",
+  Case:     "border-l-terracotta",
+  Diagnose: "border-l-violet",
+  BestAlt:  "border-l-magenta",
+  // Fase 1 fallback
+  kennis:   "border-l-teal",
   situatie: "border-l-ochre",
-  casus: "border-l-terracotta",
+  casus:    "border-l-terracotta",
 };
+
+/** All letters to display — 5 for Diagnose, 4 for all others */
+function getLetters(q: Question): string[] {
+  if (q.options.e) return ["a", "b", "c", "d", "e"];
+  return ["a", "b", "c", "d"];
+}
+
+/** Parse correct_answer: "a,c" → ["a","c"], "b" → ["b"] */
+function parseCorrect(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  return raw.split(",").map((s) => s.trim()).filter(Boolean);
+}
 
 export function QuestionCard({
   question,
@@ -22,11 +39,17 @@ export function QuestionCard({
   reveal?: boolean;
 }) {
   const bloom = normalizeBloom(question.bloom_level);
+  const displayType = question.item_type ?? question.type;
+  const borderClass = ITEM_TYPE_BORDER[displayType] ?? "border-l-ink-300";
+  const letters = getLetters(question);
+  const correctAnswers = reveal ? parseCorrect(question.correct_answer) : [];
+  const isDiagnose = question.item_type === "Diagnose" || letters.length === 5;
+
   return (
     <article
       className={cn(
         "rounded-2xl bg-cream-100 p-6 lg:p-8 border border-ink-200 border-l-4 hover:shadow-md transition-all",
-        TYPE_BORDER[question.type] ?? "border-l-ink-300",
+        borderClass,
       )}
     >
       <header className="flex flex-wrap items-start justify-between gap-3 mb-5">
@@ -34,8 +57,9 @@ export function QuestionCard({
           <span className="chip bg-cream-200 text-ink-700">
             Vraag {question.question_number}
           </span>
-          <TypeBadge type={question.type} />
+          <TypeBadge type={displayType} />
           {bloom && <BloomBadge level={bloom} />}
+          <DifficultyBadge difficulty={question.difficulty} />
         </div>
         <Link
           href={`/questions/${question.id}`}
@@ -46,13 +70,21 @@ export function QuestionCard({
         </Link>
       </header>
 
+      {isDiagnose && (
+        <p className="mono text-[10px] uppercase tracking-[0.18em] text-violet mb-3">
+          Selecteer de 2 juiste antwoorden
+        </p>
+      )}
+
       <p className="text-ink-950 text-base lg:text-lg leading-relaxed mb-6">
         {question.question}
       </p>
 
       <ul className="space-y-2">
-        {LETTERS.map((letter) => {
-          const isCorrect = reveal && question.correct_answer === letter;
+        {letters.map((letter) => {
+          const isCorrect = reveal && correctAnswers.includes(letter);
+          const optionText = question.options[letter as keyof typeof question.options];
+          if (!optionText) return null;
           return (
             <li
               key={letter}
@@ -79,12 +111,20 @@ export function QuestionCard({
               </span>
               <span
                 className={cn(
-                  "text-sm leading-relaxed",
+                  "text-sm leading-relaxed flex-1",
                   isCorrect ? "text-ink-950 font-medium" : "text-ink-700",
                 )}
               >
-                {question.options[letter]}
+                {optionText}
               </span>
+              {/* SJT / BestAlt: show weights when revealing */}
+              {reveal &&
+                question.scoring_rule?.type === "weighted" &&
+                question.scoring_rule.weights[letter] !== undefined && (
+                  <span className="mono text-[10px] text-ink-400 shrink-0 self-center">
+                    {(question.scoring_rule.weights[letter] * 100).toFixed(0)}%
+                  </span>
+                )}
             </li>
           );
         })}

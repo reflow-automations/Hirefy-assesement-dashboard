@@ -29,10 +29,15 @@ export default async function SkillDetailPage({
 
   if (!job || !skill || skill.job_id !== jobId) notFound();
 
+  // Use item_type when available (Fase 2), fall back to legacy type
   const typeCounts = questions.reduce(
-    (acc, q) => ({ ...acc, [q.type]: (acc[q.type] ?? 0) + 1 }),
+    (acc, q) => {
+      const key = q.item_type ?? q.type;
+      return { ...acc, [key]: (acc[key] ?? 0) + 1 };
+    },
     {} as Record<string, number>,
   );
+  const hasItemTypes = questions.some((q) => q.item_type);
 
   const categoryAccent =
     skill.category === "Generiek"
@@ -71,9 +76,17 @@ export default async function SkillDetailPage({
               )}
             </div>
             <h1 className="display text-ink-950 fade-up">{skill.name}</h1>
+            {skill.description && (
+              <p
+                className="mt-4 text-base text-ink-600 leading-relaxed fade-up max-w-2xl font-medium"
+                style={{ animationDelay: "80ms" }}
+              >
+                {skill.description}
+              </p>
+            )}
             {skill.relevance && (
               <p
-                className="mt-6 text-xl text-ink-700 leading-relaxed fade-up max-w-3xl"
+                className="mt-4 text-xl text-ink-700 leading-relaxed fade-up max-w-3xl"
                 style={{ animationDelay: "100ms" }}
               >
                 {skill.relevance}
@@ -94,29 +107,23 @@ export default async function SkillDetailPage({
                 <h3 className="mono text-[11px] uppercase tracking-[0.2em] text-ink-500 mb-4">
                   Vraagtypes
                 </h3>
-                <div className="grid grid-cols-3 gap-3">
-                  <TypeStat
-                    label="Kennis"
-                    value={typeCounts["kennis"] ?? 0}
-                    tint="bg-teal-tint"
-                    text="text-teal"
-                    dot="bg-teal"
-                  />
-                  <TypeStat
-                    label="Situationeel"
-                    value={typeCounts["situatie"] ?? 0}
-                    tint="bg-ochre-tint"
-                    text="text-ochre"
-                    dot="bg-ochre"
-                  />
-                  <TypeStat
-                    label="Casus"
-                    value={typeCounts["casus"] ?? 0}
-                    tint="bg-terracotta-tint"
-                    text="text-terracotta"
-                    dot="bg-terracotta"
-                  />
-                </div>
+                {hasItemTypes ? (
+                  // Fase 2: 5 item types
+                  <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3">
+                    <TypeStat label="MCQ"      value={typeCounts["MCQ"] ?? 0}      tint="bg-teal-tint"       text="text-teal"       dot="bg-teal" />
+                    <TypeStat label="SJT"      value={typeCounts["SJT"] ?? 0}      tint="bg-ochre-tint"      text="text-ochre"      dot="bg-ochre" />
+                    <TypeStat label="Casus"    value={typeCounts["Case"] ?? 0}     tint="bg-terracotta-tint" text="text-terracotta" dot="bg-terracotta" />
+                    <TypeStat label="Diagnose" value={typeCounts["Diagnose"] ?? 0} tint="bg-violet-tint"     text="text-violet"     dot="bg-violet" />
+                    <TypeStat label="Best Alt" value={typeCounts["BestAlt"] ?? 0}  tint="bg-magenta-tint"    text="text-magenta"    dot="bg-magenta" />
+                  </div>
+                ) : (
+                  // Fase 1: legacy 3 types
+                  <div className="grid grid-cols-3 gap-3">
+                    <TypeStat label="Kennis"      value={typeCounts["kennis"] ?? 0}   tint="bg-teal-tint"       text="text-teal"       dot="bg-teal" />
+                    <TypeStat label="Situationeel" value={typeCounts["situatie"] ?? 0} tint="bg-ochre-tint"      text="text-ochre"      dot="bg-ochre" />
+                    <TypeStat label="Casus"        value={typeCounts["casus"] ?? 0}   tint="bg-terracotta-tint" text="text-terracotta" dot="bg-terracotta" />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -189,9 +196,9 @@ export default async function SkillDetailPage({
               Vragen<span className="italic text-ochre">bank</span>
             </h2>
             <p className="text-ink-700 mt-5 text-lg leading-relaxed">
-              Twee volledige varianten van 5 vragen (2× kennis, 2× situationeel,
-              1× casus) — geschikt voor primaire afname en herkansing. Schakel
-              tussen varianten of verberg de antwoorden om zelf te proberen.
+              {hasItemTypes
+                ? "Twee volledige varianten van 5 vragen (1× MCQ, 1× SJT, 1× Casus, 1× Diagnose, 1× Best Alt.) — elke variant dekt alle cognitieve niveaus en vraagformaten. Schakel tussen varianten of probeer het zelf."
+                : "Twee volledige varianten van 5 vragen (2× kennis, 2× situationeel, 1× casus) — geschikt voor primaire afname en herkansing. Schakel tussen varianten of verberg de antwoorden om zelf te proberen."}
             </p>
           </div>
           <VariantSplit questions={questions} />

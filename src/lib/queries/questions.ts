@@ -11,7 +11,10 @@ function safeOptions(raw: unknown): QuestionOptions | null {
     typeof o.c === "string" &&
     typeof o.d === "string"
   ) {
-    return { a: o.a, b: o.b, c: o.c, d: o.d };
+    const opts: QuestionOptions = { a: o.a, b: o.b, c: o.c, d: o.d };
+    // Diagnose questions have a 5th option
+    if (typeof o.e === "string") opts.e = o.e;
+    return opts;
   }
   return null;
 }

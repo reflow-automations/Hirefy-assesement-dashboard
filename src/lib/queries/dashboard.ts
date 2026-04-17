@@ -5,8 +5,10 @@ import { safeEsco } from "@/lib/queries/jobs";
 import type {
   BloomLevel,
   EscoType,
+  ItemType,
   Job,
   Question,
+  ReviewStatus,
   Skill,
 } from "@/lib/types";
 
@@ -25,9 +27,13 @@ export interface DashboardData {
   // Pipeline composition
   bloomCounts: Record<BloomLevel, number>;
   typeCounts: { kennis: number; situatie: number; casus: number };
+  /** Fase 2 item type counts — populated after pipeline upgrade */
+  itemTypeCounts: Record<ItemType, number>;
   variantCounts: { A: number; B: number };
   categoryCounts: { generiek: number; sectorSpecifiek: number; other: number };
   auditCounts: Record<string, number>; // key = status (pending|...) value = count
+  /** Fase 2 review status counts */
+  reviewStatusCounts: Record<ReviewStatus | "unknown", number>;
 
   // ESCO analysis
   escoTypeCounts: Record<EscoType, number>;
@@ -75,7 +81,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     supabase
       .from("questions")
       .select(
-        "id, skill_id, job_id, variant, type, bloom_level, question, options, correct_answer, explanation, audit_status",
+        "id, skill_id, job_id, variant, type, item_type, bloom_level, question, options, correct_answer, explanation, audit_status, review_status, difficulty",
       ),
   ]);
 
@@ -120,12 +126,32 @@ export async function getDashboardData(): Promise<DashboardData> {
     if (lvl) bloomCounts[lvl]++;
   }
 
-  // ---- Type counts ----
+  // ---- Type counts (legacy Fase 1) ----
   const typeCounts = { kennis: 0, situatie: 0, casus: 0 };
   for (const q of questions) {
     if (q.type === "kennis") typeCounts.kennis++;
     else if (q.type === "situatie") typeCounts.situatie++;
     else if (q.type === "casus") typeCounts.casus++;
+  }
+
+  // ---- Item type counts (Fase 2) ----
+  const itemTypeCounts: Record<ItemType, number> = {
+    MCQ: 0, SJT: 0, Case: 0, Diagnose: 0, BestAlt: 0,
+  };
+  for (const q of questions) {
+    const it = (q as unknown as { item_type: ItemType | null }).item_type;
+    if (it && it in itemTypeCounts) itemTypeCounts[it]++;
+  }
+
+  // ---- Review status counts (Fase 2) ----
+  const reviewStatusCounts: Record<ReviewStatus | "unknown", number> = {
+    ai_validated: 0, needs_review: 0, sme_approved: 0,
+    sme_rejected: 0, generation_failed: 0, unknown: 0,
+  };
+  for (const q of questions) {
+    const rs = (q as unknown as { review_status: ReviewStatus | null }).review_status;
+    const key: ReviewStatus | "unknown" = rs ?? "unknown";
+    reviewStatusCounts[key] = (reviewStatusCounts[key] ?? 0) + 1;
   }
 
   // ---- Variant counts ----
@@ -195,7 +221,9 @@ export async function getDashboardData(): Promise<DashboardData> {
     totalOptChars += lens.reduce((a, b) => a + b, 0);
     optCount += 4;
 
-    const correctLen = optLens[q.correct_answer];
+    // For Diagnose ("a,c"), take the first letter; skip multi-correct for this metric
+    const firstCorrect = q.correct_answer.split(",")[0]?.trim() ?? "";
+    const correctLen = optLens[firstCorrect as "a" | "b" | "c" | "d"] ?? 0;
     const maxLen = Math.max(...lens);
     const minLen = Math.min(...lens) || 1;
     if (correctLen === maxLen && lens.filter((l) => l === maxLen).length === 1) {
@@ -264,9 +292,11 @@ export async function getDashboardData(): Promise<DashboardData> {
     },
     bloomCounts,
     typeCounts,
+    itemTypeCounts,
     variantCounts,
     categoryCounts,
     auditCounts,
+    reviewStatusCounts,
     escoTypeCounts,
     nonEscoSkills,
     content: {

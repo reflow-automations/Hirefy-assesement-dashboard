@@ -4,6 +4,7 @@ import { BloomPanel } from "@/components/dashboard/BloomPanel";
 import {
   AuditPanel,
   CategoryPanel,
+  ReviewStatusPanel,
   TypeCompositionPanel,
 } from "@/components/dashboard/CompositionPanels";
 import { EscoPanel } from "@/components/dashboard/EscoPanel";
@@ -65,10 +66,11 @@ export default async function DashboardPage() {
           </div>
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-[2fr_3fr]">
             <BloomPanel bloomCounts={data.bloomCounts} />
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-              <TypeCompositionPanel typeCounts={data.typeCounts} />
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-2">
+              <TypeCompositionPanel typeCounts={data.typeCounts} itemTypeCounts={data.itemTypeCounts} />
               <CategoryPanel categoryCounts={data.categoryCounts} />
               <AuditPanel auditCounts={data.auditCounts} />
+              <ReviewStatusPanel reviewStatusCounts={data.reviewStatusCounts} />
             </div>
           </div>
         </Container>
