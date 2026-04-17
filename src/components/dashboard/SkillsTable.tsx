@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
-import { Sparkbar } from "@/components/viz/Sparkbar";
-import { BLOOM_COLOR_VAR, BLOOM_LABEL, BLOOM_ORDER } from "@/lib/bloom";
 import type { DashboardData } from "@/lib/queries/dashboard";
+import type { ItemType } from "@/lib/types";
+
+const ITEM_COLORS: Record<ItemType, string> = {
+  MCQ:      "var(--teal)",
+  SJT:      "var(--ochre)",
+  Case:     "var(--terracotta)",
+  Diagnose: "var(--violet)",
+  BestAlt:  "var(--magenta)",
+};
+const ITEM_ORDER: ItemType[] = ["MCQ", "SJT", "Case", "Diagnose", "BestAlt"];
 
 export function SkillsTable({
   skills,
@@ -24,19 +32,19 @@ export function SkillsTable({
             Gesorteerd op aantal vragen. Klik voor details.
           </p>
         </div>
-        {/* Bloom legend */}
+        {/* Item type legend */}
         <div className="flex flex-wrap gap-x-3 gap-y-1.5">
-          {BLOOM_ORDER.map((level) => (
+          {ITEM_ORDER.map((type) => (
             <span
-              key={level}
+              key={type}
               className="mono text-[10px] uppercase tracking-[0.1em] flex items-center gap-1.5 text-ink-600"
             >
               <span
                 aria-hidden
                 className="block h-1.5 w-1.5 rounded-full"
-                style={{ background: BLOOM_COLOR_VAR[level] }}
+                style={{ background: ITEM_COLORS[type] }}
               />
-              {BLOOM_LABEL[level]}
+              {type}
             </span>
           ))}
         </div>
@@ -55,8 +63,11 @@ export function SkillsTable({
               <th className="text-left font-normal mono text-[10px] uppercase tracking-[0.18em] px-3 py-3">
                 ESCO
               </th>
-              <th className="text-left font-normal mono text-[10px] uppercase tracking-[0.18em] px-3 py-3 min-w-[180px]">
-                Bloom-dekking
+              <th className="text-left font-normal mono text-[10px] uppercase tracking-[0.18em] px-3 py-3 min-w-[160px]">
+                Item-types
+              </th>
+              <th className="text-right font-normal mono text-[10px] uppercase tracking-[0.18em] px-3 py-3">
+                Ø Moeilijkheid
               </th>
               <th className="text-right font-normal mono text-[10px] uppercase tracking-[0.18em] px-3 py-3">
                 Vragen
@@ -66,11 +77,8 @@ export function SkillsTable({
           </thead>
           <tbody>
             {skills.map((s) => {
-              const segments = BLOOM_ORDER.map((level) => ({
-                value: s.bloomCounts[level],
-                color: BLOOM_COLOR_VAR[level],
-                label: BLOOM_LABEL[level],
-              }));
+              const total = s.questionCount || 1;
+              const hasItemTypes = ITEM_ORDER.some((t) => s.itemTypeCounts[t] > 0);
               return (
                 <tr
                   key={s.id}
@@ -110,9 +118,36 @@ export function SkillsTable({
                     )}
                   </td>
                   <td className="px-3 py-4">
-                    <div className="w-40">
-                      <Sparkbar segments={segments} height={8} />
-                    </div>
+                    {hasItemTypes ? (
+                      <div className="w-36">
+                        {/* Proportional stacked bar */}
+                        <div className="flex h-2 overflow-hidden rounded-full bg-cream-200">
+                          {ITEM_ORDER.map((type) => {
+                            const pct = (s.itemTypeCounts[type] / total) * 100;
+                            return pct > 0 ? (
+                              <div
+                                key={type}
+                                style={{ width: `${pct}%`, background: ITEM_COLORS[type] }}
+                                title={`${type}: ${s.itemTypeCounts[type]}`}
+                              />
+                            ) : null;
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="mono text-[10px] text-ink-400 uppercase tracking-widest">
+                        Fase 1
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-3 py-4 text-right mono text-ink-950">
+                    {s.avgDifficulty !== null ? (
+                      <span className="chip bg-cream-200 text-ink-700">
+                        {s.avgDifficulty.toFixed(1)}
+                      </span>
+                    ) : (
+                      <span className="text-ink-400">—</span>
+                    )}
                   </td>
                   <td className="px-3 py-4 text-right mono text-ink-950">
                     {s.questionCount}

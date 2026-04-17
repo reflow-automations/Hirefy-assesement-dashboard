@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { Check, X, Sparkles, RotateCcw } from "lucide-react";
 import type { Question, ScoringRule } from "@/lib/types";
-import { normalizeBloom } from "@/lib/bloom";
-import { BloomBadge } from "./BloomBadge";
 import { TypeBadge, DifficultyBadge } from "./TypeBadge";
 import { VariantBadge } from "./VariantBadge";
 import { cn } from "@/lib/cn";
@@ -92,15 +90,12 @@ export function DemoQuestion({
     return pickedSingle === correctAnswers[0] ? "correct" : "wrong";
   })();
 
-  const bloom = normalizeBloom(question.bloom_level);
-
   return (
     <div>
       {/* ── Badges ── */}
       <div className="flex flex-wrap items-center gap-2 mb-8">
         <VariantBadge variant={question.variant} active />
         <TypeBadge type={displayType} />
-        {bloom && <BloomBadge level={bloom} />}
         <DifficultyBadge difficulty={question.difficulty} />
         <span className="mono text-xs text-ink-500 ml-auto">
           Vraag #{question.question_number}

@@ -1,6 +1,6 @@
 import { Container } from "@/components/layout/Container";
 import { HeroStats } from "@/components/dashboard/HeroStats";
-import { BloomPanel } from "@/components/dashboard/BloomPanel";
+import { DifficultyPanel } from "@/components/dashboard/DifficultyPanel";
 import {
   AuditPanel,
   CategoryPanel,
@@ -62,10 +62,10 @@ export default async function DashboardPage() {
               <span className="block h-1.5 w-1.5 rounded-full bg-magenta" />
               Sectie 01 · Pipeline-samenstelling
             </span>
-            <h2 className="display text-ink-950">Hoe de vragen opgebouwd zijn</h2>
+            <h2 className="display text-ink-950">Vraagstructuur <span className="italic text-magenta">&amp;</span> samenstelling</h2>
           </div>
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-[2fr_3fr]">
-            <BloomPanel bloomCounts={data.bloomCounts} />
+            <DifficultyPanel difficultyDistribution={data.difficultyDistribution} />
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-2">
               <TypeCompositionPanel typeCounts={data.typeCounts} itemTypeCounts={data.itemTypeCounts} />
               <CategoryPanel categoryCounts={data.categoryCounts} />

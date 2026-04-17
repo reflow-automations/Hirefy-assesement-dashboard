@@ -1,9 +1,7 @@
 import "server-only";
 import { createServerClient } from "@/lib/supabase/server";
-import { normalizeBloom, BLOOM_ORDER } from "@/lib/bloom";
 import { safeEsco } from "@/lib/queries/jobs";
 import type {
-  BloomLevel,
   EscoType,
   ItemType,
   Job,
@@ -25,7 +23,8 @@ export interface DashboardData {
   };
 
   // Pipeline composition
-  bloomCounts: Record<BloomLevel, number>;
+  /** Difficulty distribution 1-5 (Fase 2) */
+  difficultyDistribution: Record<1 | 2 | 3 | 4 | 5, number>;
   typeCounts: { kennis: number; situatie: number; casus: number };
   /** Fase 2 item type counts — populated after pipeline upgrade */
   itemTypeCounts: Record<ItemType, number>;
@@ -60,7 +59,9 @@ export interface DashboardData {
     category: string | null;
     inEsco: boolean;
     questionCount: number;
-    bloomCounts: Record<BloomLevel, number>;
+    /** item_type counts per skill — 0 for Fase 1 skills */
+    itemTypeCounts: Record<ItemType, number>;
+    avgDifficulty: number | null;
   }[];
 
   // Variant parity — per skill, count of A vs B questions (ideally equal)
@@ -112,18 +113,13 @@ export async function getDashboardData(): Promise<DashboardData> {
   // questions.length/2 since pipeline is designed to produce pairs.
   const variantPairs = Math.floor(questionsCount / 2);
 
-  // ---- Bloom counts ----
-  const bloomCounts: Record<BloomLevel, number> = {
-    onthouden: 0,
-    begrijpen: 0,
-    toepassen: 0,
-    analyseren: 0,
-    evalueren: 0,
-    creeren: 0,
+  // ---- Difficulty distribution (Fase 2) ----
+  const difficultyDistribution: Record<1 | 2 | 3 | 4 | 5, number> = {
+    1: 0, 2: 0, 3: 0, 4: 0, 5: 0,
   };
   for (const q of questions) {
-    const lvl = normalizeBloom(q.bloom_level);
-    if (lvl) bloomCounts[lvl]++;
+    const d = (q as unknown as { difficulty: number | null }).difficulty;
+    if (d && d >= 1 && d <= 5) difficultyDistribution[d as 1 | 2 | 3 | 4 | 5]++;
   }
 
   // ---- Type counts (legacy Fase 1) ----
@@ -243,17 +239,16 @@ export async function getDashboardData(): Promise<DashboardData> {
   const skillsTable = skills
     .map((s) => {
       const qs = questionsBySkill.get(s.id) ?? [];
-      const sb: Record<BloomLevel, number> = {
-        onthouden: 0,
-        begrijpen: 0,
-        toepassen: 0,
-        analyseren: 0,
-        evalueren: 0,
-        creeren: 0,
+      const itc: Record<ItemType, number> = {
+        MCQ: 0, SJT: 0, Case: 0, Diagnose: 0, BestAlt: 0,
       };
+      let totalDiff = 0;
+      let diffCount = 0;
       for (const q of qs) {
-        const lvl = normalizeBloom(q.bloom_level);
-        if (lvl) sb[lvl]++;
+        const it = (q as unknown as { item_type: ItemType | null }).item_type;
+        if (it && it in itc) itc[it]++;
+        const d = (q as unknown as { difficulty: number | null }).difficulty;
+        if (d) { totalDiff += d; diffCount++; }
       }
       return {
         id: s.id,
@@ -262,7 +257,8 @@ export async function getDashboardData(): Promise<DashboardData> {
         category: s.category,
         inEsco: s.in_esco === true,
         questionCount: qs.length,
-        bloomCounts: sb,
+        itemTypeCounts: itc,
+        avgDifficulty: diffCount ? Math.round((totalDiff / diffCount) * 10) / 10 : null,
       };
     })
     .sort((a, b) => b.questionCount - a.questionCount);
@@ -290,7 +286,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       escoPercentage,
       avgQuestionsPerSkill,
     },
-    bloomCounts,
+    difficultyDistribution,
     typeCounts,
     itemTypeCounts,
     variantCounts,
@@ -315,9 +311,3 @@ export async function getDashboardData(): Promise<DashboardData> {
   };
 }
 
-// Helper for UI: return bloom ordered array
-export function bloomCountArray(
-  counts: Record<BloomLevel, number>,
-): { level: BloomLevel; count: number }[] {
-  return BLOOM_ORDER.map((level) => ({ level, count: counts[level] }));
-}

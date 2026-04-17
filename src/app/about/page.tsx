@@ -1,11 +1,4 @@
 import { Container } from "@/components/layout/Container";
-import {
-  BLOOM_COLOR_VAR,
-  BLOOM_DESCRIPTION,
-  BLOOM_LABEL,
-  BLOOM_ORDER,
-  BLOOM_TIER,
-} from "@/lib/bloom";
 import { ESCO_COLOR_VAR, ESCO_DESCRIPTION, ESCO_LABEL } from "@/lib/esco";
 import type { EscoType } from "@/lib/types";
 
@@ -25,13 +18,13 @@ const PIPELINE = [
   {
     n: "03",
     title: "Vraaggeneratie",
-    body: "Per skill genereert een Senior Assessment Architect-agent 10 vragen (5 variant A + 5 variant B) verdeeld over Bloom-niveaus.",
+    body: "Per skill genereert een Senior Assessment Architect-agent 10 vragen (5 variant A + 5 variant B) verdeeld over 5 item-types: MCQ, SJT, Case, Diagnose en BestAlt — elk met een vaste cognitieve diepte.",
     accent: "teal",
   },
   {
     n: "04",
     title: "Auditcontrole",
-    body: "Elke vraag doorloopt een tweede beoordelingsronde op distractor-kwaliteit, antwoordlengte-parity, en cognitieve niveauvalidatie.",
+    body: "Elke vraag doorloopt een tweede beoordelingsronde op distractor-kwaliteit, antwoordlengte-parity, scoring-regels en variant-balans.",
     accent: "violet",
   },
 ] as const;
@@ -44,6 +37,55 @@ const ACCENTS = {
 };
 
 const ESCO_TYPES: EscoType[] = ["core", "knowledge", "tool"];
+
+// Item type taxonomy (Fase 2)
+const ITEM_TYPES = [
+  {
+    key: "MCQ",
+    label: "Multiple Choice",
+    short: "MCQ",
+    color: "var(--teal)",
+    difficulty: "1–2",
+    description:
+      "Klassieke meerkeuzevraag met 4 opties en één correct antwoord. Test feitenkennis en begrip op het laagste cognitieve niveau. Snel te beantwoorden; geschikt als anker in de vraagset.",
+  },
+  {
+    key: "SJT",
+    label: "Situational Judgement",
+    short: "SJT",
+    color: "var(--ochre)",
+    difficulty: "2–3",
+    description:
+      "Kandidaten kiezen de meest passende reactie op een werkscenario. Antwoorden zijn gewogen (0–100%) — er is niet één 'fout' antwoord, maar één optimale keuze. Meet professioneel oordeel.",
+  },
+  {
+    key: "Case",
+    label: "Casus",
+    short: "Case",
+    color: "var(--terracotta)",
+    difficulty: "4",
+    description:
+      "Langer scenario met context-rijke informatie. De kandidaat moet analyse en synthese toepassen om tot een verantwoorde beslissing te komen. Typisch 2-3× langer dan een MCQ.",
+  },
+  {
+    key: "Diagnose",
+    label: "Diagnose",
+    short: "Diagnose",
+    color: "var(--violet)",
+    difficulty: "3",
+    description:
+      "Vijf opties, waarvan er exact twee correct zijn. Partial-credit scoring: beide goed = 1 punt, één goed = 0.5 punt. Test analytisch denken en het herkennen van meervoudige oorzaken.",
+  },
+  {
+    key: "BestAlt",
+    label: "Best Alternative",
+    short: "BestAlt",
+    color: "var(--magenta)",
+    difficulty: "5",
+    description:
+      "Alle vier opties zijn plausibel, maar één is duidelijk superieur. Gewogen scoring op basis van relatieve kwaliteit. Het hoogste cognitieve niveau: evalueren en creëren.",
+  },
+] as const;
 
 export default function AboutPage() {
   return (
@@ -67,7 +109,7 @@ export default function AboutPage() {
             >
               Elke Hirefy-assessment is het product van een zorgvuldige pipeline
               die vier bronnen combineert: de Europese taxonomie, actueel
-              marktonderzoek, pedagogische modellen, en een audit-slag.
+              marktonderzoek, vijf psychometrische item-types, en een audit-slag.
             </p>
           </div>
         </Container>
@@ -151,57 +193,63 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* BLOOM */}
+      {/* ITEM TYPES */}
       <section>
         <Container size="default" className="py-12 lg:py-16">
           <div className="max-w-3xl mb-12">
-            <span className="chip bg-magenta-tint text-magenta mb-4">
-              <span className="block h-1.5 w-1.5 rounded-full bg-magenta" />
-              Cognitieve niveaus
+            <span className="chip bg-violet-tint text-violet mb-4">
+              <span className="block h-1.5 w-1.5 rounded-full bg-violet" />
+              Psychometrisch design
             </span>
             <h2 className="display text-ink-950">
-              Bloom&apos;s <span className="italic">taxonomie</span>
+              Vijf <span className="italic text-violet">item-types</span>
             </h2>
             <p className="text-ink-700 mt-5 text-lg leading-relaxed">
-              We verdelen vragen over zes cognitieve niveaus, van feitenkennis
-              tot creatief redeneren. Elke Hirefy-skill bevat 10 vragen die alle
-              niveaus proportioneel dekken:
+              Elke skill bevat precies 10 vragen — 5 per variant — verdeeld over
+              vijf item-types met oplopende cognitieve diepte. Zo meet één
+              assessment zowel feitenkennis (MCQ) als professioneel oordeel
+              (BestAlt):
             </p>
           </div>
 
           <ol className="space-y-3">
-            {BLOOM_ORDER.map((level) => (
+            {ITEM_TYPES.map((item, i) => (
               <li
-                key={level}
+                key={item.key}
                 className="flex gap-6 items-start p-6 rounded-2xl bg-cream-100 ring-1 ring-ink-200 hover:shadow-md transition-all relative overflow-hidden group"
               >
                 <div
                   aria-hidden
                   className="absolute left-0 top-0 bottom-0 w-1 transition-all group-hover:w-2"
-                  style={{ background: BLOOM_COLOR_VAR[level] }}
+                  style={{ background: item.color }}
                 />
                 <div
                   className="display text-5xl leading-none w-14 shrink-0 font-normal"
-                  style={{ color: BLOOM_COLOR_VAR[level] }}
+                  style={{ color: item.color }}
                 >
-                  {BLOOM_TIER[level]}
+                  {i + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="display text-2xl text-ink-950">
-                    {BLOOM_LABEL[level]}
-                  </h3>
-                  <p className="text-ink-700 mt-1.5 leading-relaxed">
-                    {BLOOM_DESCRIPTION[level]}
+                  <div className="flex items-center gap-3 mb-1.5">
+                    <h3 className="display text-2xl text-ink-950">
+                      {item.label}
+                    </h3>
+                    <span
+                      className="mono text-[10px] uppercase tracking-[0.15em] px-2 py-0.5 rounded"
+                      style={{
+                        color: item.color,
+                        background: `color-mix(in srgb, ${item.color} 12%, transparent)`,
+                      }}
+                    >
+                      {item.short}
+                    </span>
+                  </div>
+                  <p className="text-ink-700 leading-relaxed">
+                    {item.description}
                   </p>
                 </div>
-                <span
-                  className="mono text-[10px] uppercase tracking-[0.2em] text-ink-500 pt-3 shrink-0"
-                >
-                  {level === "onthouden" || level === "begrijpen"
-                    ? "Kennis"
-                    : level === "toepassen" || level === "analyseren"
-                      ? "Situationeel"
-                      : "Casus"}
+                <span className="mono text-[10px] uppercase tracking-[0.2em] text-ink-500 pt-3 shrink-0">
+                  Niveau {item.difficulty}
                 </span>
               </li>
             ))}

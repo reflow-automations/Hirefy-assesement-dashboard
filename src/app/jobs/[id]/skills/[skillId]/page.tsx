@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Star, Lock } from "lucide-react";
 import { Container } from "@/components/layout/Container";
-import { BloomDistribution } from "@/components/viz/BloomDistribution";
 import { VariantSplit } from "@/components/skill/VariantSplit";
 import { getJob } from "@/lib/queries/jobs";
 import { getSkill } from "@/lib/queries/skills";
@@ -101,7 +100,7 @@ export default async function SkillDetailPage({
         <Container size="wide" className="py-12 lg:py-16">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[2fr_1fr]">
             <div className="rounded-3xl bg-cream-100 p-8 lg:p-10 space-y-10">
-              <BloomDistribution questions={questions} />
+              <ItemTypeDistribution questions={questions} hasItemTypes={hasItemTypes} />
 
               <div>
                 <h3 className="mono text-[11px] uppercase tracking-[0.2em] text-ink-500 mb-4">
@@ -205,6 +204,110 @@ export default async function SkillDetailPage({
         </Container>
       </section>
     </>
+  );
+}
+
+// ── Item Type Distribution ────────────────────────────────────────────────────
+
+const ITEM_SEGMENTS = [
+  { key: "MCQ",      label: "MCQ",      color: "var(--teal)" },
+  { key: "SJT",      label: "SJT",      color: "var(--ochre)" },
+  { key: "Case",     label: "Case",     color: "var(--terracotta)" },
+  { key: "Diagnose", label: "Diagnose", color: "var(--violet)" },
+  { key: "BestAlt",  label: "Best Alt", color: "var(--magenta)" },
+];
+
+const LEGACY_SEGMENTS = [
+  { key: "kennis",   label: "Kennis",       color: "var(--teal)" },
+  { key: "situatie", label: "Situationeel", color: "var(--ochre)" },
+  { key: "casus",    label: "Casus",        color: "var(--terracotta)" },
+];
+
+import type { Question } from "@/lib/types";
+
+function ItemTypeDistribution({
+  questions,
+  hasItemTypes,
+}: {
+  questions: Question[];
+  hasItemTypes: boolean;
+}) {
+  const counts: Record<string, number> = {};
+  for (const q of questions) {
+    const key = q.item_type ?? q.type;
+    counts[key] = (counts[key] ?? 0) + 1;
+  }
+  const total = questions.length || 1;
+  const segments = hasItemTypes ? ITEM_SEGMENTS : LEGACY_SEGMENTS;
+  const diffCounts: Record<number, number> = {};
+  for (const q of questions) {
+    if (q.difficulty) diffCounts[q.difficulty] = (diffCounts[q.difficulty] ?? 0) + 1;
+  }
+  const hasDifficulty = Object.keys(diffCounts).length > 0;
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-baseline justify-between">
+        <h3 className="mono text-[11px] uppercase tracking-[0.2em] text-ink-500">
+          {hasItemTypes ? "Item-types" : "Vraagtypes"}
+        </h3>
+        <span className="mono text-xs text-ink-500">{questions.length} vragen</span>
+      </div>
+
+      {/* Stacked bar */}
+      <div className="flex h-3 overflow-hidden rounded-full bg-cream-200 ring-1 ring-ink-200">
+        {segments.map(({ key, color }) => {
+          const pct = ((counts[key] ?? 0) / total) * 100;
+          if (pct === 0) return null;
+          return (
+            <div
+              key={key}
+              style={{ width: `${pct}%`, background: color }}
+              className="transition-all hover:brightness-110"
+            />
+          );
+        })}
+      </div>
+
+      {/* Counts grid */}
+      <div className={`grid gap-2 ${hasItemTypes ? "grid-cols-5" : "grid-cols-3"}`}>
+        {segments.map(({ key, label, color }) => (
+          <div key={key} className="rounded-xl p-3 ring-1 ring-ink-200 bg-cream-50">
+            <div
+              className="mono text-[9px] uppercase tracking-[0.12em] font-semibold mb-1.5 flex items-center gap-1"
+              style={{ color }}
+            >
+              <span className="block h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+              {label}
+            </div>
+            <div className="display text-2xl text-ink-950 leading-none">
+              {counts[key] ?? 0}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Difficulty bar (Fase 2 only) */}
+      {hasDifficulty && (
+        <div className="pt-4 border-t border-ink-200">
+          <div className="mono text-[10px] uppercase tracking-[0.18em] text-ink-500 mb-3">
+            Moeilijkheid (1–5)
+          </div>
+          <div className="flex h-2.5 overflow-hidden rounded-full bg-cream-200">
+            {[1, 2, 3, 4, 5].map((d) => {
+              const pct = ((diffCounts[d] ?? 0) / total) * 100;
+              const colors = ["var(--teal)","var(--teal)","var(--ochre)","var(--terracotta)","var(--magenta)"];
+              return pct > 0 ? (
+                <div key={d} style={{ width: `${pct}%`, background: colors[d - 1] }} />
+              ) : null;
+            })}
+          </div>
+          <div className="flex justify-between mono text-[9px] text-ink-400 mt-1.5 uppercase tracking-[0.1em]">
+            <span>Basis</span><span>Expert</span>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { Check, ArrowUpRight } from "lucide-react";
 import type { Question } from "@/lib/types";
-import { normalizeBloom } from "@/lib/bloom";
-import { BloomBadge } from "./BloomBadge";
 import { TypeBadge, DifficultyBadge } from "./TypeBadge";
 import { cn } from "@/lib/cn";
 
@@ -38,7 +36,6 @@ export function QuestionCard({
   question: Question;
   reveal?: boolean;
 }) {
-  const bloom = normalizeBloom(question.bloom_level);
   const displayType = question.item_type ?? question.type;
   const borderClass = ITEM_TYPE_BORDER[displayType] ?? "border-l-ink-300";
   const letters = getLetters(question);
@@ -58,7 +55,6 @@ export function QuestionCard({
             Vraag {question.question_number}
           </span>
           <TypeBadge type={displayType} />
-          {bloom && <BloomBadge level={bloom} />}
           <DifficultyBadge difficulty={question.difficulty} />
         </div>
         <Link
