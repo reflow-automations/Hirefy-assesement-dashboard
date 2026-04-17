@@ -1,0 +1,593 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════
+   HIREFY — WARM EDITORIAL PALETTE
+   Contemporary Dutch premium. Cream canvas, earth-tone data colors,
+   electric violet for action. No more monochrome — every data layer
+   carries its own hue.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ---- Canvas: warm ivory ---- */
+  --cream-50: #fbf7ee;
+  --cream-100: #f5efdf;
+  --cream-200: #ede3c9;
+  --cream-300: #e0d3af;
+
+  /* ---- Ink: warm black to muted browns ---- */
+  --ink-950: #1a140f;
+  --ink-900: #2a211a;
+  --ink-800: #3d3328;
+  --ink-700: #564a3c;
+  --ink-500: #8a7a68;
+  --ink-400: #a89a8a;
+  --ink-300: #c6bbab;
+  --ink-200: #e1d8c5;
+
+  /* ---- Hero accent colors — rustiger, minder verzadigd ---- */
+  --terracotta: #c86049;
+  --terracotta-soft: #dd8a72;
+  --terracotta-tint: #f7ece4;
+
+  --teal: #1d5a59;
+  --teal-soft: #448484;
+  --teal-tint: #e2eeed;
+
+  --ochre: #c79a3c;
+  --ochre-soft: #d8b664;
+  --ochre-tint: #f5ecd2;
+
+  --violet: #6d4ac3;
+  --violet-soft: #9178d8;
+  --violet-tint: #ede7f7;
+
+  --magenta: #a94a76;
+  --magenta-soft: #c480a1;
+  --magenta-tint: #f2e0ea;
+
+  /* ---- Semantic ---- */
+  --success: #3d8f5a;
+  --success-tint: #e0eee4;
+  --error: #c14747;
+  --error-tint: #f5e1e1;
+
+  /* ---- ESCO types (each distinctive) ---- */
+  --esco-core: var(--terracotta);
+  --esco-core-tint: var(--terracotta-tint);
+  --esco-knowledge: var(--teal);
+  --esco-knowledge-tint: var(--teal-tint);
+  --esco-tool: var(--ochre);
+  --esco-tool-tint: var(--ochre-tint);
+
+  /* ---- Bloom spectrum — cool-to-warm complexity gradient ---- */
+  --bloom-1: #2b8a87;
+  --bloom-2: #4a9f7a;
+  --bloom-3: #b8a04c;
+  --bloom-4: #d4a53a;
+  --bloom-5: #d96a47;
+  --bloom-6: #b8427a;
+
+  /* ---- Question types ---- */
+  --type-kennis: var(--teal);
+  --type-situatie: var(--ochre);
+  --type-casus: var(--terracotta);
+
+  /* ---- Primary action color ---- */
+  --accent: var(--violet);
+  --accent-soft: var(--violet-soft);
+  --accent-tint: var(--violet-tint);
+
+  /* ---- Elevation / shadow system (warm-tinted, layered) ---- */
+  --shadow-xs: 0 1px 2px rgba(42, 33, 26, 0.04);
+  --shadow-sm: 0 2px 4px rgba(42, 33, 26, 0.06), 0 1px 2px rgba(42, 33, 26, 0.04);
+  --shadow-md: 0 8px 16px -4px rgba(42, 33, 26, 0.08), 0 2px 4px rgba(42, 33, 26, 0.04);
+  --shadow-lg: 0 18px 36px -8px rgba(42, 33, 26, 0.12), 0 4px 8px rgba(42, 33, 26, 0.04);
+  --shadow-xl: 0 30px 60px -12px rgba(42, 33, 26, 0.18), 0 8px 16px rgba(42, 33, 26, 0.06);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK THEME — Midnight ink canvas, warm paper text,
+   same color identity, dialed-down saturation for eye comfort.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root[data-theme="dark"] {
+  /* Canvas becomes warm deep ink — NOT pure black. Holds warmth. */
+  --cream-50: #13100c;
+  --cream-100: #1c1812;
+  --cream-200: #26201a;
+  --cream-300: #332b22;
+
+  /* Text becomes warm paper */
+  --ink-950: #f2ead4;
+  --ink-900: #e4d9bb;
+  --ink-800: #c9bb98;
+  --ink-700: #a59879;
+  --ink-500: #7a6f58;
+  --ink-400: #5e5444;
+  --ink-300: #453d31;
+  --ink-200: #2e2820;
+
+  /* Accents — slightly brighter/more luminous so they sing on dark */
+  --terracotta: #eb8a6b;
+  --terracotta-soft: #f0a389;
+  --terracotta-tint: rgba(235, 138, 107, 0.14);
+
+  --teal: #5ab8b4;
+  --teal-soft: #7fccc8;
+  --teal-tint: rgba(90, 184, 180, 0.14);
+
+  --ochre: #eabe58;
+  --ochre-soft: #efce82;
+  --ochre-tint: rgba(234, 190, 88, 0.15);
+
+  --violet: #a88af0;
+  --violet-soft: #beaaf3;
+  --violet-tint: rgba(168, 138, 240, 0.16);
+
+  --magenta: #d986b1;
+  --magenta-soft: #e2a2c2;
+  --magenta-tint: rgba(217, 134, 177, 0.14);
+
+  --success: #6abd82;
+  --success-tint: rgba(106, 189, 130, 0.14);
+  --error: #db7b7b;
+  --error-tint: rgba(219, 123, 123, 0.14);
+
+  /* Bloom ramp — slightly brighter for dark mode */
+  --bloom-1: #4fb1ad;
+  --bloom-2: #68bf94;
+  --bloom-3: #d5ba64;
+  --bloom-4: #eabe58;
+  --bloom-5: #eb8a6b;
+  --bloom-6: #d986b1;
+
+  /* Type colors follow */
+  --type-kennis: var(--teal);
+  --type-situatie: var(--ochre);
+  --type-casus: var(--terracotta);
+
+  /* Shadows become darker-bloomed for depth on dark canvas */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 10px 20px -4px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 20px 40px -8px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.25);
+  --shadow-xl: 0 34px 70px -12px rgba(0, 0, 0, 0.6), 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth token transitions when toggling theme */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html,
+body,
+.paper-card,
+button,
+a,
+input {
+  transition:
+    background-color 400ms ease,
+    color 300ms ease,
+    border-color 300ms ease;
+}
+
+@theme inline {
+  --color-background: var(--cream-50);
+  --color-foreground: var(--ink-950);
+
+  --color-cream-50: var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-cream-200: var(--cream-200);
+  --color-cream-300: var(--cream-300);
+
+  --color-ink-950: var(--ink-950);
+  --color-ink-900: var(--ink-900);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-500: var(--ink-500);
+  --color-ink-400: var(--ink-400);
+  --color-ink-300: var(--ink-300);
+  --color-ink-200: var(--ink-200);
+
+  --color-terracotta: var(--terracotta);
+  --color-terracotta-soft: var(--terracotta-soft);
+  --color-terracotta-tint: var(--terracotta-tint);
+
+  --color-teal: var(--teal);
+  --color-teal-soft: var(--teal-soft);
+  --color-teal-tint: var(--teal-tint);
+
+  --color-ochre: var(--ochre);
+  --color-ochre-soft: var(--ochre-soft);
+  --color-ochre-tint: var(--ochre-tint);
+
+  --color-violet: var(--violet);
+  --color-violet-soft: var(--violet-soft);
+  --color-violet-tint: var(--violet-tint);
+
+  --color-magenta: var(--magenta);
+  --color-magenta-tint: var(--magenta-tint);
+
+  --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
+  --color-error: var(--error);
+  --color-error-tint: var(--error-tint);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-tint: var(--accent-tint);
+
+  --font-display: var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", serif;
+  --font-sans: var(--font-instrument), "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-jetbrains), "SFMono-Regular", Menlo, monospace;
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* BASE */
+/* ═══════════════════════════════════════════════════════════════ */
+
+* {
+  border-color: var(--ink-200);
+}
+
+html {
+  background: var(--cream-50);
+}
+
+body {
+  background: var(--cream-50);
+  color: var(--ink-950);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.55;
+  position: relative;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0 0.1 0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+:root[data-theme="dark"] body::before {
+  opacity: 0.08;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.85 0 0 0 0 0.75 0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+main {
+  position: relative;
+  z-index: 2;
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* TYPOGRAPHY */
+/* ═══════════════════════════════════════════════════════════════ */
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  color: var(--ink-950);
+}
+
+h1 {
+  font-size: clamp(3rem, 7vw, 6rem);
+  letter-spacing: -0.035em;
+  font-variation-settings: "opsz" 144, "SOFT" 60;
+  line-height: 0.95;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  letter-spacing: -0.025em;
+  font-variation-settings: "opsz" 100, "SOFT" 50;
+  line-height: 1.02;
+}
+
+h3 {
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  font-variation-settings: "opsz" 32, "SOFT" 40;
+  letter-spacing: -0.015em;
+}
+
+h4 {
+  font-size: 1.125rem;
+  font-variation-settings: "opsz" 20, "SOFT" 30;
+}
+
+p {
+  color: var(--ink-800);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+a:hover {
+  color: var(--violet);
+}
+
+em,
+i,
+.italic {
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* UTILITIES */
+/* ═══════════════════════════════════════════════════════════════ */
+
+.mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "zero", "ss01";
+  letter-spacing: -0.01em;
+}
+
+.display {
+  font-family: var(--font-display);
+}
+
+.hairline {
+  border-top: 1px solid var(--ink-200);
+}
+.hairline-b {
+  border-bottom: 1px solid var(--ink-200);
+}
+
+.paper-card {
+  background: var(--cream-100);
+  border: 1px solid var(--ink-200);
+  border-radius: 14px;
+  transition:
+    transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 300ms ease,
+    border-color 200ms ease;
+}
+
+.paper-card-lift:hover {
+  transform: translateY(-3px);
+  border-color: var(--ink-300);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* GRADIENT MESH (hero background) */
+/* ═══════════════════════════════════════════════════════════════ */
+
+.mesh-hero {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.mesh-hero::before,
+.mesh-hero::after,
+.mesh-hero > span {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  animation: mesh-float 16s ease-in-out infinite;
+}
+:root[data-theme="dark"] .mesh-hero::before,
+:root[data-theme="dark"] .mesh-hero::after {
+  opacity: 0.2;
+}
+:root[data-theme="dark"] .mesh-hero > span {
+  opacity: 0.15;
+}
+.mesh-hero::before {
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle at center, var(--terracotta-soft), transparent 70%);
+  top: -20vw;
+  right: -10vw;
+  animation-delay: 0s;
+}
+.mesh-hero::after {
+  width: 45vw;
+  height: 45vw;
+  background: radial-gradient(circle at center, var(--ochre-soft), transparent 70%);
+  bottom: -15vw;
+  left: -5vw;
+  animation-delay: -5s;
+}
+.mesh-hero > span {
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle at center, var(--violet-soft), transparent 70%);
+  top: 30%;
+  left: 40%;
+  opacity: 0.3;
+  animation-delay: -10s;
+}
+
+@keyframes mesh-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(3vw, -2vw) scale(1.05);
+  }
+  66% {
+    transform: translate(-2vw, 3vw) scale(0.95);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* SCROLLBAR + SELECTION + FOCUS */
+/* ═══════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cream-100);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink-300);
+  border-radius: 8px;
+  border: 3px solid var(--cream-100);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-500);
+}
+
+::selection {
+  background: var(--ochre);
+  color: var(--ink-950);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* ANIMATIONS */
+/* ═══════════════════════════════════════════════════════════════ */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fade-up 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fade-in 500ms ease both;
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scale-in {
+  animation: scale-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.stagger > * {
+  animation: fade-up 600ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 80ms; }
+.stagger > *:nth-child(3) { animation-delay: 160ms; }
+.stagger > *:nth-child(4) { animation-delay: 240ms; }
+.stagger > *:nth-child(5) { animation-delay: 320ms; }
+.stagger > *:nth-child(6) { animation-delay: 400ms; }
+.stagger > *:nth-child(7) { animation-delay: 480ms; }
+.stagger > *:nth-child(8) { animation-delay: 560ms; }
+.stagger > *:nth-child(9) { animation-delay: 640ms; }
+.stagger > *:nth-child(10) { animation-delay: 720ms; }
+.stagger > *:nth-child(11) { animation-delay: 800ms; }
+.stagger > *:nth-child(12) { animation-delay: 880ms; }
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* DECORATIVE */
+/* ═══════════════════════════════════════════════════════════════ */
+
+.grid-hairlines {
+  background-image:
+    linear-gradient(to right, var(--ink-200) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ink-200) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.5) 0%, transparent 70%);
+  opacity: 0.5;
+}
+
+.dot-grid {
+  background-image: radial-gradient(circle, var(--ink-300) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.link-animated {
+  position: relative;
+  display: inline-block;
+}
+.link-animated::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.link-animated:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  opacity: 0.4;
+}
