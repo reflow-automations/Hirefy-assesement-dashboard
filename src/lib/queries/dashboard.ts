@@ -82,7 +82,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     supabase
       .from("questions")
       .select(
-        "id, skill_id, job_id, variant, type, item_type, bloom_level, question, options, correct_answer, explanation, audit_status, review_status, difficulty",
+        "id, skill_id, job_id, variant, item_type, question, options, correct_answer, explanation, audit_status, review_status, difficulty",
       ),
   ]);
 
