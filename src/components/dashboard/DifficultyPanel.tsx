@@ -2,11 +2,11 @@ import { HorizontalBar } from "@/components/viz/HorizontalBar";
 import type { DashboardData } from "@/lib/queries/dashboard";
 
 const DIFFICULTY_CONFIG = [
-  { level: 1 as const, label: "MCQ · Basis",         color: "var(--teal)" },
-  { level: 2 as const, label: "SJT · Licht",          color: "var(--teal)" },
-  { level: 3 as const, label: "Diagnose · Middel",    color: "var(--ochre)" },
-  { level: 4 as const, label: "Case · Zwaar",         color: "var(--terracotta)" },
-  { level: 5 as const, label: "Best Alt. · Expert",   color: "var(--magenta)" },
+  { level: 1 as const, label: "Niveau 1 · Basis",  color: "var(--teal)" },
+  { level: 2 as const, label: "Niveau 2 · Licht",  color: "var(--teal)" },
+  { level: 3 as const, label: "Niveau 3 · Middel", color: "var(--ochre)" },
+  { level: 4 as const, label: "Niveau 4 · Zwaar",  color: "var(--terracotta)" },
+  { level: 5 as const, label: "Niveau 5 · Expert", color: "var(--magenta)" },
 ];
 
 export function DifficultyPanel({
@@ -36,7 +36,7 @@ export function DifficultyPanel({
             Moeilijkheidsverdeling
           </h3>
           <p className="text-sm text-ink-700 mt-1">
-            Item-type bepaalt moeilijkheid — van basis MCQ (1) tot expert BestAlt (5).
+            Verdeling over de vijf niveaus, van basis (1) tot expert (5).
           </p>
         </div>
         <div className="mono text-[10px] uppercase tracking-[0.2em] text-ink-500 pt-1 hidden sm:block">

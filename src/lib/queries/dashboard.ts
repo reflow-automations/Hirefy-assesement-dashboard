@@ -29,7 +29,6 @@ export interface DashboardData {
   /** Fase 2 item type counts — populated after pipeline upgrade */
   itemTypeCounts: Record<ItemType, number>;
   variantCounts: { A: number; B: number };
-  categoryCounts: { generiek: number; sectorSpecifiek: number; other: number };
   auditCounts: Record<string, number>; // key = status (pending|...) value = count
   /** Fase 2 review status counts */
   reviewStatusCounts: Record<ReviewStatus | "unknown", number>;
@@ -56,7 +55,6 @@ export interface DashboardData {
     id: number;
     name: string;
     jobId: number;
-    category: string | null;
     inEsco: boolean;
     questionCount: number;
     /** item_type counts per skill — 0 for Fase 1 skills */
@@ -78,7 +76,7 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   const [jobsRes, skillsRes, questionsRes] = await Promise.all([
     supabase.from("jobs").select("id, title, sector, esco_raw_data"),
-    supabase.from("skills").select("id, name, job_id, category, in_esco, audit_status"),
+    supabase.from("skills").select("id, name, job_id, in_esco, audit_status"),
     supabase
       .from("questions")
       .select(
@@ -141,7 +139,7 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   // ---- Review status counts (Fase 2) ----
   const reviewStatusCounts: Record<ReviewStatus | "unknown", number> = {
-    ai_validated: 0, needs_review: 0, sme_approved: 0,
+    pending: 0, ai_validated: 0, needs_review: 0, sme_approved: 0,
     sme_rejected: 0, generation_failed: 0, unknown: 0,
   };
   for (const q of questions) {
@@ -155,14 +153,6 @@ export async function getDashboardData(): Promise<DashboardData> {
   for (const q of questions) {
     if (q.variant === "A") variantCounts.A++;
     else if (q.variant === "B") variantCounts.B++;
-  }
-
-  // ---- Category counts ----
-  const categoryCounts = { generiek: 0, sectorSpecifiek: 0, other: 0 };
-  for (const s of skills) {
-    if (s.category === "Generiek") categoryCounts.generiek++;
-    else if (s.category === "Sector-specifiek") categoryCounts.sectorSpecifiek++;
-    else categoryCounts.other++;
   }
 
   // ---- Audit counts (questions level) ----
@@ -254,7 +244,6 @@ export async function getDashboardData(): Promise<DashboardData> {
         id: s.id,
         name: s.name,
         jobId: s.job_id,
-        category: s.category,
         inEsco: s.in_esco === true,
         questionCount: qs.length,
         itemTypeCounts: itc,
@@ -290,7 +279,6 @@ export async function getDashboardData(): Promise<DashboardData> {
     typeCounts,
     itemTypeCounts,
     variantCounts,
-    categoryCounts,
     auditCounts,
     reviewStatusCounts,
     escoTypeCounts,
@@ -310,4 +298,3 @@ export async function getDashboardData(): Promise<DashboardData> {
     variantParity,
   };
 }
-

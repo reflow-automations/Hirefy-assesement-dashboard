@@ -58,9 +58,6 @@ export function SkillsTable({
                 Skill
               </th>
               <th className="text-left font-normal mono text-[10px] uppercase tracking-[0.18em] px-3 py-3">
-                Categorie
-              </th>
-              <th className="text-left font-normal mono text-[10px] uppercase tracking-[0.18em] px-3 py-3">
                 ESCO
               </th>
               <th className="text-left font-normal mono text-[10px] uppercase tracking-[0.18em] px-3 py-3 min-w-[160px]">
@@ -91,19 +88,6 @@ export function SkillsTable({
                     >
                       {s.name}
                     </Link>
-                  </td>
-                  <td className="px-3 py-4">
-                    {s.category && (
-                      <span
-                        className={`chip ${
-                          s.category === "Generiek"
-                            ? "bg-teal-tint text-teal"
-                            : "bg-terracotta-tint text-terracotta"
-                        }`}
-                      >
-                        {s.category}
-                      </span>
-                    )}
                   </td>
                   <td className="px-3 py-4">
                     {s.inEsco ? (

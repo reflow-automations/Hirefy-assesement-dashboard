@@ -38,11 +38,6 @@ export default async function SkillDetailPage({
   );
   const hasItemTypes = questions.some((q) => q.item_type);
 
-  const categoryAccent =
-    skill.category === "Generiek"
-      ? { chip: "bg-teal-tint text-teal", dot: "bg-teal" }
-      : { chip: "bg-terracotta-tint text-terracotta", dot: "bg-terracotta" };
-
   return (
     <>
       {/* HEADER */}
@@ -59,14 +54,6 @@ export default async function SkillDetailPage({
 
           <div className="mt-8 max-w-4xl">
             <div className="flex flex-wrap items-center gap-2 mb-5">
-              {skill.category && (
-                <span className={`chip ${categoryAccent.chip}`}>
-                  <span
-                    className={`block h-1.5 w-1.5 rounded-full ${categoryAccent.dot}`}
-                  />
-                  {skill.category}
-                </span>
-              )}
               {skill.in_esco && (
                 <span className="chip bg-violet-tint text-violet">
                   <Star className="h-3 w-3 fill-violet" />

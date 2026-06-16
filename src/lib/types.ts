@@ -17,18 +17,16 @@ export interface Job {
   job_family: string | null;
   esco_raw_data: EscoEntry[] | null;
   market_insight: string | null;
+  selection_reasoning: string | null;
   status: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export type SkillCategory = "Generiek" | "Sector-specifiek";
-
 export interface Skill {
   id: number;
   job_id: number;
   name: string;
-  category: SkillCategory | null;
   relevance: string | null;
   in_esco: boolean | null;
   assessment_data: Record<string, unknown> | null;
@@ -89,6 +87,7 @@ export type ScoringRule =
 
 // ── Review status (Fase 2 pipeline workflow) ──────────────────────────────────
 export type ReviewStatus =
+  | "pending"
   | "ai_validated"
   | "needs_review"
   | "sme_approved"

@@ -3,7 +3,6 @@ import { HeroStats } from "@/components/dashboard/HeroStats";
 import { DifficultyPanel } from "@/components/dashboard/DifficultyPanel";
 import {
   AuditPanel,
-  CategoryPanel,
   ReviewStatusPanel,
   TypeCompositionPanel,
 } from "@/components/dashboard/CompositionPanels";
@@ -68,7 +67,6 @@ export default async function DashboardPage() {
             <DifficultyPanel difficultyDistribution={data.difficultyDistribution} />
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-2">
               <TypeCompositionPanel typeCounts={data.typeCounts} itemTypeCounts={data.itemTypeCounts} />
-              <CategoryPanel categoryCounts={data.categoryCounts} />
               <AuditPanel auditCounts={data.auditCounts} />
               <ReviewStatusPanel reviewStatusCounts={data.reviewStatusCounts} />
             </div>

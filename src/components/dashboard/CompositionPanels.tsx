@@ -71,53 +71,6 @@ export function TypeCompositionPanel({
   );
 }
 
-// ── Category Panel ────────────────────────────────────────────────────────────
-
-export function CategoryPanel({
-  categoryCounts,
-}: {
-  categoryCounts: DashboardData["categoryCounts"];
-}) {
-  const total =
-    categoryCounts.generiek +
-      categoryCounts.sectorSpecifiek +
-      categoryCounts.other || 1;
-
-  const segments = [
-    { label: "Generiek",       value: categoryCounts.generiek,       color: "var(--teal)" },
-    { label: "Sector-specifiek",value: categoryCounts.sectorSpecifiek,color: "var(--terracotta)" },
-    { label: "Overig",          value: categoryCounts.other,          color: "var(--ink-400)" },
-  ].filter((s) => s.value > 0);
-
-  return (
-    <div className="rounded-3xl bg-cream-100 p-6 ring-1 ring-ink-200 flex flex-col">
-      <div className="mb-4">
-        <span className="chip bg-terracotta-tint text-terracotta mb-2">
-          <span className="block h-1.5 w-1.5 rounded-full bg-terracotta" />
-          Skill-categorie
-        </span>
-        <h3 className="display text-xl text-ink-950 mt-2">Samenstelling</h3>
-      </div>
-      <div className="flex items-center justify-center py-4">
-        <Donut segments={segments} size={160} thickness={20} centerValue={total} centerLabel="Skills" />
-      </div>
-      <ul className="mt-auto space-y-2 pt-4 border-t border-ink-200">
-        {segments.map((s) => (
-          <li key={s.label} className="flex items-center justify-between text-sm">
-            <span className="flex items-center gap-2 text-ink-800">
-              <span aria-hidden className="block h-2 w-2 rounded-full" style={{ background: s.color }} />
-              {s.label}
-            </span>
-            <span className="mono text-xs text-ink-500">
-              {s.value} · {Math.round((s.value / total) * 100)}%
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 // ── Audit Panel ───────────────────────────────────────────────────────────────
 
 export function AuditPanel({
@@ -173,6 +126,7 @@ export function AuditPanel({
 // ── Review Status Panel (Fase 2) ─────────────────────────────────────────────
 
 const REVIEW_LABEL: Record<string, string> = {
+  pending:          "Nog te valideren",
   ai_validated:     "AI gevalideerd",
   needs_review:     "Handmatig review",
   sme_approved:     "SME goedgekeurd",
@@ -181,6 +135,7 @@ const REVIEW_LABEL: Record<string, string> = {
   unknown:          "Onbekend",
 };
 const REVIEW_COLOR: Record<string, string> = {
+  pending:          "var(--violet)",
   ai_validated:     "var(--teal)",
   needs_review:     "var(--ochre)",
   sme_approved:     "var(--success)",

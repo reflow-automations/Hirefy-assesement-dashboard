@@ -3,7 +3,7 @@ import { Container } from "@/components/layout/Container";
 import { SectorCrumbs } from "@/components/job/SectorCrumbs";
 import { MarketInsight } from "@/components/job/MarketInsight";
 import { EscoBrowser } from "@/components/job/EscoBrowser";
-import { SkillsByCategory } from "@/components/job/SkillsByCategory";
+import { SkillsList } from "@/components/job/SkillsList";
 import { getJob, safeEsco } from "@/lib/queries/jobs";
 import { listSkillsByJob } from "@/lib/queries/skills";
 import { humanizeTitle } from "@/lib/text";
@@ -86,6 +86,23 @@ export default async function JobDetailPage({
         </section>
       )}
 
+      {/* SKILL-SELECTIE ONDERBOUWING */}
+      {job.selection_reasoning && (
+        <section>
+          <Container size="wide" className="py-6">
+            <div className="rounded-3xl bg-cream-100 p-6 lg:p-8 ring-1 ring-ink-200">
+              <span className="chip bg-violet-tint text-violet mb-3">
+                <span className="block h-1.5 w-1.5 rounded-full bg-violet" />
+                Skill-selectie onderbouwing
+              </span>
+              <p className="text-ink-700 leading-relaxed whitespace-pre-line">
+                {job.selection_reasoning}
+              </p>
+            </div>
+          </Container>
+        </section>
+      )}
+
       {/* SKILLS */}
       <section>
         <Container size="wide" className="py-12 lg:py-20">
@@ -104,7 +121,7 @@ export default async function JobDetailPage({
               voor de detail-breakdown.
             </p>
           </div>
-          <SkillsByCategory skills={skills} jobId={job.id} />
+          <SkillsList skills={skills} jobId={job.id} />
         </Container>
       </section>
     </>
