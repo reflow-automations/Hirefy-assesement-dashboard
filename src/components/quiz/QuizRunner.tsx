@@ -236,7 +236,7 @@ export function QuizRunner({
           </p>
         )}
 
-        <h2 className="display text-ink-950 text-2xl lg:text-3xl leading-tight">
+        <h2 className="text-ink-950 text-lg lg:text-xl font-medium leading-relaxed">
           {q.question}
         </h2>
 
