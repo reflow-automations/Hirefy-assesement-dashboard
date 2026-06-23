@@ -49,21 +49,29 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const jobParam = searchParams.get("job");
   const skillParam = searchParams.get("skill");
-  const jobId = jobParam ? Number(jobParam) : undefined;
-  const skillId = skillParam ? Number(skillParam) : undefined;
+  // `jobs` = meerdere (csv), `job` = enkel (backward compat). Geen van beide + geen skill = alle beroepen.
+  const jobsParam = searchParams.get("jobs") ?? searchParams.get("job");
 
-  if (jobParam && Number.isNaN(jobId)) {
-    return new Response("Ongeldige job-id", { status: 400 });
-  }
-  if (skillParam && Number.isNaN(skillId)) {
+  const skillId = skillParam ? Number(skillParam) : undefined;
+  if (skillParam && (skillId === undefined || Number.isNaN(skillId))) {
     return new Response("Ongeldige skill-id", { status: 400 });
+  }
+
+  let jobIds: number[] | undefined;
+  if (skillId === undefined && jobsParam) {
+    jobIds = jobsParam
+      .split(",")
+      .map((s) => Number(s.trim()))
+      .filter((n) => Number.isInteger(n));
+    if (jobIds.length === 0) {
+      return new Response("Ongeldige beroep-id('s)", { status: 400 });
+    }
   }
 
   let rows: ExportRow[];
   try {
-    rows = await getExportRows({ jobId, skillId });
+    rows = await getExportRows({ jobIds, skillId });
   } catch (err) {
     console.error("Export query faalde:", err);
     return new Response("Export mislukt bij het ophalen van de data", {
@@ -114,10 +122,10 @@ export async function GET(request: NextRequest) {
 
   // Bestandsnaam afleiden uit de scope.
   let base = "alle-vragen";
-  if (skillId && rows[0]?.skill) base = `skill-${slug(rows[0].skill)}`;
-  else if (jobId && rows[0]?.beroep) base = slug(rows[0].beroep);
-  else if (skillId) base = `skill-${skillId}`;
-  else if (jobId) base = `beroep-${jobId}`;
+  if (skillId) base = rows[0]?.skill ? `skill-${slug(rows[0].skill)}` : `skill-${skillId}`;
+  else if (jobIds && jobIds.length === 1)
+    base = rows[0]?.beroep ? slug(rows[0].beroep) : `beroep-${jobIds[0]}`;
+  else if (jobIds && jobIds.length > 1) base = `${jobIds.length}-beroepen`;
   const filename = `hirefy-${base}.xlsx`;
 
   const buffer = await workbook.xlsx.writeBuffer();

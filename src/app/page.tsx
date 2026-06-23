@@ -1,8 +1,10 @@
 import { Container } from "@/components/layout/Container";
 import { JobsGrid } from "@/components/catalog/JobsGrid";
 import { StatsStrip } from "@/components/catalog/StatsStrip";
+import { ExportPanel } from "@/components/export/ExportPanel";
 import { listJobs } from "@/lib/queries/jobs";
 import { getStats } from "@/lib/queries/stats";
+import { humanizeTitle } from "@/lib/text";
 import { Search, ArrowDown } from "lucide-react";
 
 export const revalidate = 3600;
@@ -13,10 +15,16 @@ export default async function HomePage({
   searchParams: Promise<{ q?: string; sector?: string }>;
 }) {
   const { q, sector } = await searchParams;
-  const [jobs, stats] = await Promise.all([
+  const [jobs, allJobs, stats] = await Promise.all([
     listJobs({ query: q, sector }),
+    listJobs({}),
     getStats(),
   ]);
+  // Alle beroepen voor het export-paneel (los van een actief zoekfilter).
+  const exportJobs = allJobs.map((j) => ({
+    id: j.id,
+    title: humanizeTitle(j.title),
+  }));
 
   return (
     <>
@@ -116,6 +124,13 @@ export default async function HomePage({
       <section>
         <Container size="wide" className="py-12">
           <StatsStrip stats={stats} />
+        </Container>
+      </section>
+
+      {/* EXPORT */}
+      <section>
+        <Container size="wide" className="pb-4">
+          <ExportPanel jobs={exportJobs} />
         </Container>
       </section>
 

@@ -46,7 +46,6 @@ function parseCorrect(raw: unknown): string[] {
 interface RawRow {
   variant: string | null;
   question_number: number | null;
-  type: string | null;
   item_type: string | null;
   question: string | null;
   options: Record<string, unknown> | null;
@@ -68,7 +67,7 @@ function mapRow(r: RawRow): ExportRow {
     .map((l) => opt(l))
     .filter(Boolean)
     .join("  |  ");
-  const rawType = r.item_type ?? r.type ?? "";
+  const rawType = r.item_type ?? "";
 
   return {
     beroep: r.jobs?.title ? humanizeTitle(r.jobs.title) : "",
@@ -95,18 +94,20 @@ function mapRow(r: RawRow): ExportRow {
 }
 
 export async function getExportRows(opts: {
-  jobId?: number;
+  jobIds?: number[];
   skillId?: number;
 }): Promise<ExportRow[]> {
   const supabase = createServerClient();
+  // LET OP: questions heeft geen `type`-kolom meer (Fase 1 verwijderd) — alleen item_type.
   let q = supabase
     .from("questions")
     .select(
-      "variant, question_number, type, item_type, question, options, correct_answer, explanation, difficulty, review_status, audit_notes, skills(name), jobs(title)",
+      "variant, question_number, item_type, question, options, correct_answer, explanation, difficulty, review_status, audit_notes, skills(name), jobs(title)",
     );
 
   if (opts.skillId) q = q.eq("skill_id", opts.skillId);
-  else if (opts.jobId) q = q.eq("job_id", opts.jobId);
+  else if (opts.jobIds && opts.jobIds.length > 0) q = q.in("job_id", opts.jobIds);
+  // geen filter => alle beroepen
 
   const { data, error } = await q
     .order("job_id")
