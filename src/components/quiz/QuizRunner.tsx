@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Check,
@@ -26,6 +26,27 @@ function getLetters(q: Question): string[] {
 function getWeight(rule: ScoringRule | null, letter: string): number | null {
   if (!rule || rule.type !== "weighted") return null;
   return rule.weights[letter] ?? null;
+}
+
+// Weergave-labels per positie. De onderliggende optie-identiteit blijft de
+// originele letter (a–e); we husselen alleen de volgorde waarin ze getoond worden.
+const LABELS = ["A", "B", "C", "D", "E"];
+
+function shuffle<T>(input: T[]): T[] {
+  const a = [...input];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildOrders(questions: Question[]): Record<number, string[]> {
+  const orders: Record<number, string[]> = {};
+  questions.forEach((q, i) => {
+    orders[i] = shuffle(getLetters(q));
+  });
+  return orders;
 }
 
 interface AnswerState {
@@ -65,6 +86,12 @@ export function QuizRunner({
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, AnswerState>>({});
   const [finished, setFinished] = useState(false);
+  // Gehusselde optie-volgorde per vraag. Leeg bij SSR/eerste render (natuurlijke
+  // volgorde) en pas client-side geshuffeld in de effect → geen hydration-mismatch.
+  const [orders, setOrders] = useState<Record<number, string[]>>({});
+  useEffect(() => {
+    setOrders(buildOrders(questions));
+  }, [questions]);
 
   const total = questions.length;
 
@@ -112,6 +139,7 @@ export function QuizRunner({
               setAnswers({});
               setIndex(0);
               setFinished(false);
+              setOrders(buildOrders(questions));
             }}
             className="mono inline-flex items-center gap-2 rounded-full bg-ink-950 px-6 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-cream-50 transition hover:bg-violet"
           >
@@ -132,7 +160,11 @@ export function QuizRunner({
 
   const q = questions[index];
   const ans = answers[index] ?? { picked: [], revealed: false };
-  const letters = getLetters(q);
+  const order = orders[index] ?? getLetters(q);
+  const displayLabelOf = (letter: string) => {
+    const pos = order.indexOf(letter);
+    return pos >= 0 ? LABELS[pos] : letter.toUpperCase();
+  };
   const correct = parseCorrect(q.correct_answer);
   const isDiagnose = q.item_type === "Diagnose" || q.options.e !== undefined;
   const isWeighted = q.item_type === "SJT" || q.item_type === "BestAlt";
@@ -210,7 +242,7 @@ export function QuizRunner({
 
         {/* Opties */}
         <div className="mt-8 space-y-3">
-          {letters.map((letter) => {
+          {order.map((letter, i) => {
             const text = q.options[letter as keyof typeof q.options];
             if (!text) return null;
             const optionCorrect = correct.includes(letter);
@@ -249,7 +281,7 @@ export function QuizRunner({
                   ) : showWrong ? (
                     <X className="h-4 w-4" />
                   ) : (
-                    letter.toUpperCase()
+                    LABELS[i]
                   )}
                 </span>
                 <span className="flex-1 self-center">
@@ -283,10 +315,10 @@ export function QuizRunner({
               {questionCorrect
                 ? "Goed"
                 : isDiagnose
-                  ? `Juiste antwoorden: ${correct.map((l) => l.toUpperCase()).join(" en ")}`
+                  ? `Juiste antwoorden: ${correct.map(displayLabelOf).join(" en ")}`
                   : isWeighted
                     ? "Niet het optimale antwoord"
-                    : `Juiste antwoord: ${(correct[0] ?? "").toUpperCase()}`}
+                    : `Juiste antwoord: ${displayLabelOf(correct[0] ?? "")}`}
             </div>
             {q.explanation && (
               <p className="mt-2 text-sm leading-relaxed text-ink-800">{q.explanation}</p>
