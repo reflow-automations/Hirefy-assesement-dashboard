@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { Donut } from "@/components/viz/Donut";
 import { ESCO_COLOR_VAR, ESCO_DESCRIPTION, ESCO_LABEL } from "@/lib/esco";
 import type { EscoEntry, EscoType } from "@/lib/types";
@@ -29,8 +30,11 @@ const TAB_STYLES: Record<EscoType, { bg: string; text: string; ring: string; dot
   },
 };
 
+const VISIBLE = 8;
+
 export function EscoBrowser({ entries }: { entries: EscoEntry[] }) {
   const [active, setActive] = useState<EscoType>("core");
+  const [showAll, setShowAll] = useState(false);
 
   const counts = TYPES.reduce(
     (acc, t) => ({ ...acc, [t]: entries.filter((e) => e.type === t).length }),
@@ -38,7 +42,13 @@ export function EscoBrowser({ entries }: { entries: EscoEntry[] }) {
   );
   const total = entries.length;
   const filtered = entries.filter((e) => e.type === active);
+  const visible = showAll ? filtered : filtered.slice(0, VISIBLE);
   const activeStyle = TAB_STYLES[active];
+
+  const selectType = (t: EscoType) => {
+    setActive(t);
+    setShowAll(false);
+  };
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[320px_1fr]">
@@ -65,7 +75,7 @@ export function EscoBrowser({ entries }: { entries: EscoEntry[] }) {
               <button
                 key={t}
                 type="button"
-                onClick={() => setActive(t)}
+                onClick={() => selectType(t)}
                 className={cn(
                   "w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl transition-all border",
                   isActive
@@ -109,8 +119,8 @@ export function EscoBrowser({ entries }: { entries: EscoEntry[] }) {
         <p className="text-ink-700 mb-8 max-w-prose leading-relaxed">
           {ESCO_DESCRIPTION[active]}
         </p>
-        <ul className="space-y-2">
-          {filtered.map((entry, i) => (
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {visible.map((entry, i) => (
             <li
               key={i}
               className="group flex gap-4 p-4 rounded-xl bg-cream-50 ring-1 ring-ink-200 hover:ring-ink-300 hover:shadow-sm transition-all"
@@ -138,6 +148,31 @@ export function EscoBrowser({ entries }: { entries: EscoEntry[] }) {
             </li>
           ))}
         </ul>
+
+        {filtered.length > VISIBLE && (
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setShowAll((s) => !s)}
+              className={cn(
+                "mono inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] transition",
+                activeStyle.bg,
+                activeStyle.text,
+                "hover:brightness-95",
+              )}
+            >
+              {showAll
+                ? "Toon minder"
+                : `Toon alle ${filtered.length}`}
+              <ChevronDown
+                className={cn(
+                  "h-3.5 w-3.5 transition-transform",
+                  showAll && "rotate-180",
+                )}
+              />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

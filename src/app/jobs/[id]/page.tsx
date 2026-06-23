@@ -3,6 +3,7 @@ import { Container } from "@/components/layout/Container";
 import { SectorCrumbs } from "@/components/job/SectorCrumbs";
 import { MarketInsight } from "@/components/job/MarketInsight";
 import { EscoBrowser } from "@/components/job/EscoBrowser";
+import { ExpandableText } from "@/components/job/ExpandableText";
 import { SkillsList } from "@/components/job/SkillsList";
 import { ExportButton } from "@/components/export/ExportButton";
 import { getJob, safeEsco } from "@/lib/queries/jobs";
@@ -96,9 +97,11 @@ export default async function JobDetailPage({
                 <span className="block h-1.5 w-1.5 rounded-full bg-violet" />
                 Skill-selectie onderbouwing
               </span>
-              <p className="text-ink-700 leading-relaxed whitespace-pre-line">
-                {job.selection_reasoning}
-              </p>
+              <ExpandableText
+                text={job.selection_reasoning}
+                clampLines={6}
+                className="text-ink-700"
+              />
             </div>
           </Container>
         </section>
