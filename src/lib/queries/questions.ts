@@ -39,6 +39,25 @@ export async function listQuestionsBySkill(
     .filter((r): r is Question => r !== null);
 }
 
+export async function listQuestionsByJob(jobId: number): Promise<Question[]> {
+  const supabase = createServerClient();
+  const { data, error } = await supabase
+    .from("questions")
+    .select("*")
+    .eq("job_id", jobId)
+    .order("skill_id")
+    .order("variant")
+    .order("question_number");
+  if (error) throw error;
+  return (data ?? [])
+    .map((r) => {
+      const options = safeOptions((r as { options: unknown }).options);
+      if (!options) return null;
+      return { ...(r as unknown as Question), options };
+    })
+    .filter((r): r is Question => r !== null);
+}
+
 export async function getQuestion(id: number): Promise<Question | null> {
   const supabase = createServerClient();
   const { data, error } = await supabase

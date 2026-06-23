@@ -6,6 +6,7 @@ import { EscoBrowser } from "@/components/job/EscoBrowser";
 import { ExpandableText } from "@/components/job/ExpandableText";
 import { SkillsList } from "@/components/job/SkillsList";
 import { ExportButton } from "@/components/export/ExportButton";
+import { QuizButton } from "@/components/quiz/QuizButton";
 import { getJob, safeEsco } from "@/lib/queries/jobs";
 import { listSkillsByJob } from "@/lib/queries/skills";
 import { humanizeTitle } from "@/lib/text";
@@ -126,10 +127,13 @@ export default async function JobDetailPage({
                 voor de detail-breakdown.
               </p>
             </div>
-            <ExportButton
-              href={`/api/export?job=${job.id}`}
-              label="Exporteer alle vragen (.xlsx)"
-            />
+            <div className="flex flex-wrap items-center gap-2">
+              <QuizButton href={`/jobs/${job.id}/quiz`} />
+              <ExportButton
+                href={`/api/export?job=${job.id}`}
+                label="Exporteer alle vragen (.xlsx)"
+              />
+            </div>
           </div>
           <SkillsList skills={skills} jobId={job.id} />
         </Container>
