@@ -2,14 +2,19 @@
 
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { QuestionCard } from "@/components/question/QuestionCard";
+import { EditableQuestionCard } from "@/components/question/EditableQuestionCard";
 import type { Question, QuestionVariant } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 export function VariantSplit({ questions }: { questions: Question[] }) {
   const [variant, setVariant] = useState<QuestionVariant>("A");
   const [showAnswers, setShowAnswers] = useState(true);
-  const filtered = questions
+  const [items, setItems] = useState<Question[]>(questions);
+
+  const updateItem = (updated: Question) =>
+    setItems((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
+
+  const filtered = items
     .filter((q) => q.variant === variant)
     .sort((a, b) => a.question_number - b.question_number);
 
@@ -54,7 +59,12 @@ export function VariantSplit({ questions }: { questions: Question[] }) {
 
       <div className="space-y-5 stagger" key={variant}>
         {filtered.map((q) => (
-          <QuestionCard key={q.id} question={q} reveal={showAnswers} />
+          <EditableQuestionCard
+            key={q.id}
+            question={q}
+            reveal={showAnswers}
+            onChange={updateItem}
+          />
         ))}
       </div>
     </div>

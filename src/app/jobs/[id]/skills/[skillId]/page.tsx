@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Star, Lock } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { VariantSplit } from "@/components/skill/VariantSplit";
+import { ExportButton } from "@/components/export/ExportButton";
 import { getJob } from "@/lib/queries/jobs";
 import { getSkill } from "@/lib/queries/skills";
 import { listQuestionsBySkill } from "@/lib/queries/questions";
@@ -173,19 +174,25 @@ export default async function SkillDetailPage({
       {/* QUESTIONS */}
       <section>
         <Container size="wide" className="py-12 lg:py-16">
-          <div className="mb-10 max-w-3xl">
-            <span className="mono text-[11px] uppercase tracking-[0.2em] text-ochre mb-3 inline-flex items-center gap-2">
-              <span className="block h-1.5 w-1.5 rounded-full bg-ochre" />
-              Assessment-inhoud
-            </span>
-            <h2 className="display text-ink-950">
-              Vragen<span className="italic text-ochre">bank</span>
-            </h2>
-            <p className="text-ink-700 mt-5 text-lg leading-relaxed">
-              {hasItemTypes
-                ? "Twee volledige varianten van 5 vragen (1× MCQ, 1× SJT, 1× Casus, 1× Diagnose, 1× Best Alt.) — elke variant dekt alle cognitieve niveaus en vraagformaten. Schakel tussen varianten of probeer het zelf."
-                : "Twee volledige varianten van 5 vragen (2× kennis, 2× situationeel, 1× casus) — geschikt voor primaire afname en herkansing. Schakel tussen varianten of verberg de antwoorden om zelf te proberen."}
-            </p>
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-3xl">
+              <span className="mono text-[11px] uppercase tracking-[0.2em] text-ochre mb-3 inline-flex items-center gap-2">
+                <span className="block h-1.5 w-1.5 rounded-full bg-ochre" />
+                Assessment-inhoud
+              </span>
+              <h2 className="display text-ink-950">
+                Vragen<span className="italic text-ochre">bank</span>
+              </h2>
+              <p className="text-ink-700 mt-5 text-lg leading-relaxed">
+                {hasItemTypes
+                  ? "Twee volledige varianten van 5 vragen (1× MCQ, 1× SJT, 1× Casus, 1× Diagnose, 1× Best Alt.) — elke variant dekt alle cognitieve niveaus en vraagformaten. Schakel tussen varianten of probeer het zelf."
+                  : "Twee volledige varianten van 5 vragen (2× kennis, 2× situationeel, 1× casus) — geschikt voor primaire afname en herkansing. Schakel tussen varianten of verberg de antwoorden om zelf te proberen."}
+              </p>
+            </div>
+            <ExportButton
+              href={`/api/export?skill=${skill.id}`}
+              label="Exporteer deze skill (.xlsx)"
+            />
           </div>
           <VariantSplit questions={questions} />
         </Container>

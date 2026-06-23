@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Container } from "@/components/layout/Container";
-import { DemoQuestion } from "@/components/question/DemoQuestion";
+import { DemoQuestionEditable } from "@/components/question/DemoQuestionEditable";
 import {
   getQuestion,
   getSiblingVariantQuestion,
@@ -97,7 +97,7 @@ export default async function QuestionDemoPage({
         </div>
 
         <div className="rounded-3xl bg-cream-100 p-8 lg:p-12 ring-1 ring-ink-200 shadow-[0_18px_36px_-8px_rgba(42,33,26,0.08)]">
-          <DemoQuestion
+          <DemoQuestionEditable
             question={question}
             siblingHref={sibling ? `/questions/${sibling.id}` : null}
           />

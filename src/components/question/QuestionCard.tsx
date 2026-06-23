@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { Check, ArrowUpRight } from "lucide-react";
 import type { Question } from "@/lib/types";
@@ -32,9 +33,12 @@ function parseCorrect(raw: string | null | undefined): string[] {
 export function QuestionCard({
   question,
   reveal = true,
+  headerExtra,
 }: {
   question: Question;
   reveal?: boolean;
+  /** Optionele controls (review-status, potlood) rechtsboven in de header. */
+  headerExtra?: ReactNode;
 }) {
   const displayType = question.item_type ?? question.type;
   const borderClass = ITEM_TYPE_BORDER[displayType] ?? "border-l-ink-300";
@@ -57,13 +61,16 @@ export function QuestionCard({
           <TypeBadge type={displayType} />
           <DifficultyBadge difficulty={question.difficulty} />
         </div>
-        <Link
-          href={`/questions/${question.id}`}
-          className="group inline-flex items-center gap-1.5 mono text-xs text-ink-500 hover:text-violet transition"
-        >
-          Demo
-          <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-        </Link>
+        <div className="flex items-center gap-3">
+          {headerExtra}
+          <Link
+            href={`/questions/${question.id}`}
+            className="group inline-flex items-center gap-1.5 mono text-xs text-ink-500 hover:text-violet transition"
+          >
+            Demo
+            <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </Link>
+        </div>
       </header>
 
       {isDiagnose && (

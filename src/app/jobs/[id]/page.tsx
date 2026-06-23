@@ -4,6 +4,7 @@ import { SectorCrumbs } from "@/components/job/SectorCrumbs";
 import { MarketInsight } from "@/components/job/MarketInsight";
 import { EscoBrowser } from "@/components/job/EscoBrowser";
 import { SkillsList } from "@/components/job/SkillsList";
+import { ExportButton } from "@/components/export/ExportButton";
 import { getJob, safeEsco } from "@/lib/queries/jobs";
 import { listSkillsByJob } from "@/lib/queries/skills";
 import { humanizeTitle } from "@/lib/text";
@@ -106,20 +107,26 @@ export default async function JobDetailPage({
       {/* SKILLS */}
       <section>
         <Container size="wide" className="py-12 lg:py-20">
-          <div className="mb-10 max-w-3xl">
-            <span className="mono text-[11px] uppercase tracking-[0.2em] text-terracotta mb-3 inline-flex items-center gap-2">
-              <span className="block h-1.5 w-1.5 rounded-full bg-terracotta" />
-              Assessment-opbouw
-            </span>
-            <h2 className="display text-ink-950">
-              Vaardigheden &amp;{" "}
-              <span className="italic text-terracotta">schalen</span>
-            </h2>
-            <p className="text-ink-700 mt-5 text-lg leading-relaxed">
-              Elke vaardigheid is uitgewerkt in 10 vragen (5 primaire, 5
-              alternatieve) verdeeld over Bloom-niveaus. Klik een vaardigheid
-              voor de detail-breakdown.
-            </p>
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-3xl">
+              <span className="mono text-[11px] uppercase tracking-[0.2em] text-terracotta mb-3 inline-flex items-center gap-2">
+                <span className="block h-1.5 w-1.5 rounded-full bg-terracotta" />
+                Assessment-opbouw
+              </span>
+              <h2 className="display text-ink-950">
+                Vaardigheden &amp;{" "}
+                <span className="italic text-terracotta">schalen</span>
+              </h2>
+              <p className="text-ink-700 mt-5 text-lg leading-relaxed">
+                Elke vaardigheid is uitgewerkt in 10 vragen (5 primaire, 5
+                alternatieve) verdeeld over Bloom-niveaus. Klik een vaardigheid
+                voor de detail-breakdown.
+              </p>
+            </div>
+            <ExportButton
+              href={`/api/export?job=${job.id}`}
+              label="Exporteer alle vragen (.xlsx)"
+            />
           </div>
           <SkillsList skills={skills} jobId={job.id} />
         </Container>

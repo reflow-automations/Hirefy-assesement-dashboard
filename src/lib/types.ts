@@ -94,6 +94,27 @@ export type ReviewStatus =
   | "sme_rejected"
   | "generation_failed";
 
+// Runtime-bruikbare lijst + Nederlandse labels — single source of truth voor de
+// review-status dropdown (dashboard) en de server-action validatie.
+// Volgorde = de constraint-volgorde op questions.review_status.
+export const REVIEW_STATUS_VALUES = [
+  "pending",
+  "ai_validated",
+  "needs_review",
+  "sme_approved",
+  "sme_rejected",
+  "generation_failed",
+] as const satisfies readonly ReviewStatus[];
+
+export const REVIEW_STATUS_LABELS: Record<ReviewStatus, string> = {
+  pending: "Nog te valideren",
+  ai_validated: "AI-gevalideerd",
+  needs_review: "Aandacht nodig",
+  sme_approved: "Mens goedgekeurd",
+  sme_rejected: "Mens afgekeurd",
+  generation_failed: "Generatie mislukt",
+};
+
 // Canonical Bloom levels — normalized via lib/bloom.ts
 export type BloomLevel =
   | "onthouden"
