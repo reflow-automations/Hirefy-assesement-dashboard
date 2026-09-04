@@ -185,7 +185,9 @@ export default async function SkillDetailPage({
                 Vragen<span className="italic text-ochre">bank</span>
               </h2>
               <p className="text-ink-700 mt-5 text-lg leading-relaxed">
-                {hasItemTypes
+                {(typeCounts["Learn"] ?? 0) > 0
+                  ? "Leervermogen: twee varianten van 5 vragen, elk met een verzonnen regel en een toepassingsvraag, oplopend van één regel (niveau 1) tot drie regels met een voorrangsvolgorde (niveau 5). Zonder de regel te lezen is het antwoord niet te weten; dat is precies wat gemeten wordt."
+                  : hasItemTypes
                   ? "Twee volledige varianten van 5 vragen (1× MCQ, 1× SJT, 1× Casus, 1× Diagnose, 1× Best Alt.) — elke variant dekt alle cognitieve niveaus en vraagformaten. Schakel tussen varianten of probeer het zelf."
                   : "Twee volledige varianten van 5 vragen (2× kennis, 2× situationeel, 1× casus) — geschikt voor primaire afname en herkansing. Schakel tussen varianten of verberg de antwoorden om zelf te proberen."}
               </p>

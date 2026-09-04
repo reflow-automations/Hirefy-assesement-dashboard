@@ -123,8 +123,9 @@ export default async function JobDetailPage({
               </h2>
               <p className="text-ink-700 mt-5 text-lg leading-relaxed">
                 Elke vaardigheid is uitgewerkt in 10 vragen (5 primaire, 5
-                alternatieve) verdeeld over Bloom-niveaus. Klik een vaardigheid
-                voor de detail-breakdown.
+                alternatieve) verdeeld over niveau 1 tot 5. Het blok
+                Leervermogen meet apart hoe snel iemand een nieuwe regel
+                oppakt. Klik een vaardigheid voor de detail-breakdown.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">

@@ -18,7 +18,7 @@ const PIPELINE = [
   {
     n: "03",
     title: "Vraaggeneratie",
-    body: "Per skill genereert een Senior Assessment Architect-agent 10 vragen (5 variant A + 5 variant B) verdeeld over 5 item-types: MCQ, SJT, Case, Diagnose en BestAlt — elk met een vaste cognitieve diepte.",
+    body: "Per vak-skill genereert een Senior Assessment Architect-agent 10 vragen (5 variant A + 5 variant B) verdeeld over 5 item-types: MCQ, SJT, Diagnose, Case en BestAlt, elk met een vast niveau van 1 tot 5. Daarnaast krijgt elk beroep een vast blok Leervermogen van 10 vragen, gemaakt door een aparte agent.",
     accent: "teal",
   },
   {
@@ -45,7 +45,7 @@ const ITEM_TYPES = [
     label: "Multiple Choice",
     short: "MCQ",
     color: "var(--teal)",
-    difficulty: "1–2",
+    difficulty: "1",
     description:
       "Klassieke meerkeuzevraag met 4 opties en één correct antwoord. Test feitenkennis en begrip op het laagste cognitieve niveau. Snel te beantwoorden; geschikt als anker in de vraagset.",
   },
@@ -54,18 +54,9 @@ const ITEM_TYPES = [
     label: "Situational Judgement",
     short: "SJT",
     color: "var(--ochre)",
-    difficulty: "2–3",
+    difficulty: "2",
     description:
       "Kandidaten kiezen de meest passende reactie op een werkscenario. Antwoorden zijn gewogen (0–100%) — er is niet één 'fout' antwoord, maar één optimale keuze. Meet professioneel oordeel.",
-  },
-  {
-    key: "Case",
-    label: "Casus",
-    short: "Case",
-    color: "var(--terracotta)",
-    difficulty: "4",
-    description:
-      "Langer scenario met context-rijke informatie. De kandidaat moet analyse en synthese toepassen om tot een verantwoorde beslissing te komen. Typisch 2-3× langer dan een MCQ.",
   },
   {
     key: "Diagnose",
@@ -77,6 +68,15 @@ const ITEM_TYPES = [
       "Vijf opties, waarvan er exact twee correct zijn. Partial-credit scoring: beide goed = 1 punt, één goed = 0.5 punt. Test analytisch denken en het herkennen van meervoudige oorzaken.",
   },
   {
+    key: "Case",
+    label: "Casus",
+    short: "Case",
+    color: "var(--terracotta)",
+    difficulty: "4",
+    description:
+      "Langer scenario met context-rijke informatie. De kandidaat moet analyse en synthese toepassen om tot een verantwoorde beslissing te komen. Typisch 2-3× langer dan een MCQ.",
+  },
+  {
     key: "BestAlt",
     label: "Best Alternative",
     short: "BestAlt",
@@ -84,6 +84,15 @@ const ITEM_TYPES = [
     difficulty: "5",
     description:
       "Alle vier opties zijn plausibel, maar één is duidelijk superieur. Gewogen scoring op basis van relatieve kwaliteit. Het hoogste cognitieve niveau: evalueren en creëren.",
+  },
+  {
+    key: "Learn",
+    label: "Leervermogen",
+    short: "Learn",
+    color: "var(--learn)",
+    difficulty: "1–5",
+    description:
+      "Apart blok per beroep, geen vak-skill. Elke vraag geeft eerst een verzonnen regel van 2 à 3 zinnen en daarna een toepassingsvraag. Niemand kent de regel vooraf, dus ervaring geeft geen voorsprong. Meet hoe snel iemand een nieuwe instructie oppakt. Niveau 1 tot 5 is hier regelcomplexiteit: van één regel tot drie regels met een voorrangsvolgorde.",
   },
 ] as const;
 
@@ -109,7 +118,8 @@ export default function AboutPage() {
             >
               Elke Hirefy-assessment is het product van een zorgvuldige pipeline
               die vier bronnen combineert: de Europese taxonomie, actueel
-              marktonderzoek, vijf psychometrische item-types, en een audit-slag.
+              marktonderzoek, vijf psychometrische item-types plus een apart
+              blok leervermogen, en een audit-slag.
             </p>
           </div>
         </Container>
@@ -202,13 +212,15 @@ export default function AboutPage() {
               Psychometrisch design
             </span>
             <h2 className="display text-ink-950">
-              Vijf <span className="italic text-violet">item-types</span>
+              Zes <span className="italic text-violet">item-types</span>
             </h2>
             <p className="text-ink-700 mt-5 text-lg leading-relaxed">
-              Elke skill bevat precies 10 vragen — 5 per variant — verdeeld over
-              vijf item-types met oplopende cognitieve diepte. Zo meet één
+              Elke vak-skill bevat precies 10 vragen — 5 per variant — verdeeld
+              over vijf item-types met oplopende cognitieve diepte. Zo meet één
               assessment zowel feitenkennis (MCQ) als professioneel oordeel
-              (BestAlt):
+              (BestAlt). Daarnaast heeft elk beroep een vast blok Leervermogen
+              van 10 vragen: dat meet niet wat iemand al weet, maar hoe snel
+              iemand een nieuwe regel oppakt en toepast.
             </p>
           </div>
 

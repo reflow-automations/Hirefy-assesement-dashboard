@@ -23,7 +23,7 @@ export async function SiteFooter() {
 
           <div className="flex items-center gap-6">
             <div className="mono text-[10px] uppercase tracking-[0.2em] text-ink-500">
-              Gebouwd op ESCO · Bloom&apos;s Taxonomy · © {new Date().getFullYear()}
+              Gebouwd op ESCO · Niveau 1-5 · Leervermogen · © {new Date().getFullYear()}
             </div>
             {isAuthenticated && (
               <>

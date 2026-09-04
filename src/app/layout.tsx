@@ -26,7 +26,7 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Hirefy — Skill-based assessment catalogus",
   description:
-    "Publieke showcase van beroepen, vaardigheden en assessmentvragen, gebouwd op ESCO en Bloom's taxonomy.",
+    "Publieke showcase van beroepen, vaardigheden en assessmentvragen, gebouwd op ESCO, vijf niveaus en een apart blok leervermogen.",
 };
 
 // Runs before hydration / first paint. Reads localStorage + system preference

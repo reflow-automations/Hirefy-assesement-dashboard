@@ -76,8 +76,8 @@ export default async function HomePage({
               Elke assessment begint bij de Europese{" "}
               <strong className="text-teal font-semibold">ESCO-taxonomie</strong>, wordt
               verrijkt met <strong className="text-terracotta font-semibold">marktinzicht
-              2026</strong> en uitgewerkt via <strong className="text-violet font-semibold">Bloom&apos;s
-              taxonomy</strong> — van feitenkennis tot casusredenering.
+              2026</strong> en uitgewerkt in <strong className="text-violet font-semibold">vijf
+              niveaus</strong> — van feitenkennis tot casusredenering, plus een apart blok leervermogen.
             </p>
 
             {/* Search */}
