@@ -42,7 +42,7 @@ export interface Skill {
 export type QuestionType = "kennis" | "situatie" | "casus";
 
 // ── New item type taxonomy (Fase 2) — source of truth when populated ─────────
-export type ItemType = "MCQ" | "SJT" | "Case" | "Diagnose" | "BestAlt";
+export type ItemType = "MCQ" | "SJT" | "Case" | "Diagnose" | "BestAlt" | "Learn";
 
 // Unified display type: prefer item_type, fall back to type
 export type DisplayType = ItemType | QuestionType;

@@ -12,6 +12,7 @@ const ITEM_TYPE_BORDER: Record<string, string> = {
   Case:     "border-l-terracotta",
   Diagnose: "border-l-violet",
   BestAlt:  "border-l-magenta",
+  Learn:    "border-l-learn",
   // Fase 1 fallback
   kennis:   "border-l-teal",
   situatie: "border-l-ochre",

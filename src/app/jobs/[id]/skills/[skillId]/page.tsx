@@ -95,13 +95,14 @@ export default async function SkillDetailPage({
                   Vraagtypes
                 </h3>
                 {hasItemTypes ? (
-                  // Fase 2: 5 item types
-                  <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3">
+                  // Fase 2: 5 item types + Leervermogen (Learn)
+                  <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
                     <TypeStat label="MCQ"      value={typeCounts["MCQ"] ?? 0}      tint="bg-teal-tint"       text="text-teal"       dot="bg-teal" />
                     <TypeStat label="SJT"      value={typeCounts["SJT"] ?? 0}      tint="bg-ochre-tint"      text="text-ochre"      dot="bg-ochre" />
                     <TypeStat label="Casus"    value={typeCounts["Case"] ?? 0}     tint="bg-terracotta-tint" text="text-terracotta" dot="bg-terracotta" />
                     <TypeStat label="Diagnose" value={typeCounts["Diagnose"] ?? 0} tint="bg-violet-tint"     text="text-violet"     dot="bg-violet" />
                     <TypeStat label="Best Alt" value={typeCounts["BestAlt"] ?? 0}  tint="bg-magenta-tint"    text="text-magenta"    dot="bg-magenta" />
+                    <TypeStat label="Leervermogen" value={typeCounts["Learn"] ?? 0} tint="bg-learn-tint"     text="text-learn"      dot="bg-learn" />
                   </div>
                 ) : (
                   // Fase 1: legacy 3 types
@@ -209,6 +210,7 @@ const ITEM_SEGMENTS = [
   { key: "Case",     label: "Case",     color: "var(--terracotta)" },
   { key: "Diagnose", label: "Diagnose", color: "var(--violet)" },
   { key: "BestAlt",  label: "Best Alt", color: "var(--magenta)" },
+  { key: "Learn",    label: "Leervermogen", color: "var(--learn)" },
 ];
 
 const LEGACY_SEGMENTS = [
@@ -264,7 +266,7 @@ function ItemTypeDistribution({
       </div>
 
       {/* Counts grid */}
-      <div className={`grid gap-2 ${hasItemTypes ? "grid-cols-5" : "grid-cols-3"}`}>
+      <div className={`grid gap-2 ${hasItemTypes ? "grid-cols-6" : "grid-cols-3"}`}>
         {segments.map(({ key, label, color }) => (
           <div key={key} className="rounded-xl p-3 ring-1 ring-ink-200 bg-cream-50">
             <div

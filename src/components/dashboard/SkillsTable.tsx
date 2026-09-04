@@ -9,8 +9,9 @@ const ITEM_COLORS: Record<ItemType, string> = {
   Case:     "var(--terracotta)",
   Diagnose: "var(--violet)",
   BestAlt:  "var(--magenta)",
+  Learn:    "var(--learn)",
 };
-const ITEM_ORDER: ItemType[] = ["MCQ", "SJT", "Case", "Diagnose", "BestAlt"];
+const ITEM_ORDER: ItemType[] = ["MCQ", "SJT", "Case", "Diagnose", "BestAlt", "Learn"];
 
 export function SkillsTable({
   skills,

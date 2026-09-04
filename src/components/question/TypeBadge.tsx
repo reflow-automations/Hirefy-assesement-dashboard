@@ -8,6 +8,7 @@ const LABEL: Record<string, string> = {
   Case: "Casus",
   Diagnose: "Diagnose",
   BestAlt: "Best Alt.",
+  Learn: "Leervermogen",
   // Fase 1 — legacy type
   kennis: "Kennis",
   situatie: "Situationeel",
@@ -22,6 +23,7 @@ const STYLE: Record<string, { bg: string; text: string; dot: string }> = {
   Case:     { bg: "bg-terracotta-tint",text: "text-terracotta",dot: "bg-terracotta" },
   Diagnose: { bg: "bg-violet-tint",    text: "text-violet",    dot: "bg-violet" },
   BestAlt:  { bg: "bg-magenta-tint",   text: "text-magenta",   dot: "bg-magenta" },
+  Learn:    { bg: "bg-learn-tint",     text: "text-learn",     dot: "bg-learn" },
   // Fase 1 fallback
   kennis:   { bg: "bg-teal-tint",      text: "text-teal",      dot: "bg-teal" },
   situatie: { bg: "bg-ochre-tint",     text: "text-ochre",     dot: "bg-ochre" },

@@ -15,7 +15,8 @@ export function TypeCompositionPanel({
     itemTypeCounts.SJT +
     itemTypeCounts.Case +
     itemTypeCounts.Diagnose +
-    itemTypeCounts.BestAlt;
+    itemTypeCounts.BestAlt +
+    itemTypeCounts.Learn;
   const totalLegacy = typeCounts.kennis + typeCounts.situatie + typeCounts.casus;
 
   // Show Fase 2 item types if any are populated
@@ -29,6 +30,7 @@ export function TypeCompositionPanel({
         { label: "Case",     value: itemTypeCounts.Case,     color: "var(--terracotta)" },
         { label: "Diagnose", value: itemTypeCounts.Diagnose, color: "var(--violet)" },
         { label: "Best Alt", value: itemTypeCounts.BestAlt,  color: "var(--magenta)" },
+        { label: "Leervermogen", value: itemTypeCounts.Learn, color: "var(--learn)" },
       ]
     : [
         { label: "Kennis",      value: typeCounts.kennis,   color: "var(--teal)" },

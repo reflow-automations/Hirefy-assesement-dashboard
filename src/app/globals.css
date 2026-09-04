@@ -44,6 +44,9 @@
   --magenta: #a94a76;
   --magenta-soft: #c480a1;
   --magenta-tint: #f2e0ea;
+  --learn: #4f7a4a;
+  --learn-soft: #7fa37a;
+  --learn-tint: #e2ecdf;
 
   /* ---- Semantic ---- */
   --success: #3d8f5a;
@@ -127,6 +130,9 @@
   --magenta: #d986b1;
   --magenta-soft: #e2a2c2;
   --magenta-tint: rgba(217, 134, 177, 0.14);
+  --learn: #8fbf88;
+  --learn-soft: #a9cfa3;
+  --learn-tint: rgba(143, 191, 136, 0.14);
 
   --success: #6abd82;
   --success-tint: rgba(106, 189, 130, 0.14);
@@ -211,6 +217,8 @@ input {
 
   --color-magenta: var(--magenta);
   --color-magenta-tint: var(--magenta-tint);
+  --color-learn: var(--learn);
+  --color-learn-tint: var(--learn-tint);
 
   --color-success: var(--success);
   --color-success-tint: var(--success-tint);

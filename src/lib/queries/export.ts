@@ -33,6 +33,7 @@ const TYPE_LABEL: Record<string, string> = {
   Case: "Casus",
   Diagnose: "Diagnose",
   BestAlt: "Best Alt.",
+  Learn: "Leervermogen",
   kennis: "Kennis",
   situatie: "Situationeel",
   casus: "Casus",

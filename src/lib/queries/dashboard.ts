@@ -130,7 +130,7 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   // ---- Item type counts (Fase 2) ----
   const itemTypeCounts: Record<ItemType, number> = {
-    MCQ: 0, SJT: 0, Case: 0, Diagnose: 0, BestAlt: 0,
+    MCQ: 0, SJT: 0, Case: 0, Diagnose: 0, BestAlt: 0, Learn: 0,
   };
   for (const q of questions) {
     const it = (q as unknown as { item_type: ItemType | null }).item_type;
@@ -230,7 +230,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     .map((s) => {
       const qs = questionsBySkill.get(s.id) ?? [];
       const itc: Record<ItemType, number> = {
-        MCQ: 0, SJT: 0, Case: 0, Diagnose: 0, BestAlt: 0,
+        MCQ: 0, SJT: 0, Case: 0, Diagnose: 0, BestAlt: 0, Learn: 0,
       };
       let totalDiff = 0;
       let diffCount = 0;
