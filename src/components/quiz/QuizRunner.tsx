@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   Check,
@@ -49,6 +49,16 @@ function buildOrders(questions: Question[]): Record<number, string[]> {
   return orders;
 }
 
+// Toelichtingen verwijzen naar de originele letters (a-e); husselen we de
+// opties, dan moeten die verwijzingen mee naar de getoonde labels.
+function remapExplanation(text: string, map: (letter: string) => string): string {
+  return text
+    .replace(/\b([Oo]ptie)\s+([a-e])\b/g, (_m, w: string, l: string) => `${w} ${map(l)}`)
+    .replace(/\(([a-e])\)/g, (_m, l: string) => `(${map(l)})`);
+}
+
+const COUNT_PRESETS = [10, 25, 50] as const;
+
 interface AnswerState {
   picked: string[];
   revealed: boolean;
@@ -86,16 +96,29 @@ export function QuizRunner({
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, AnswerState>>({});
   const [finished, setFinished] = useState(false);
-  // Gehusselde optie-volgorde per vraag. Leeg bij SSR/eerste render (natuurlijke
-  // volgorde) en pas client-side geshuffeld in de effect → geen hydration-mismatch.
+  // De actieve selectie (subset + volgorde). null = startscherm. Shufflen
+  // gebeurt pas bij de startklik (client-side) → geen hydration-mismatch.
+  const [session, setSession] = useState<Question[] | null>(null);
   const [orders, setOrders] = useState<Record<number, string[]>>({});
-  useEffect(() => {
-    setOrders(buildOrders(questions));
-  }, [questions]);
+  // Instellingen op het startscherm
+  const [countInput, setCountInput] = useState<string>("25");
+  const [randomOrder, setRandomOrder] = useState(true);
 
-  const total = questions.length;
+  const startQuiz = () => {
+    const parsed = Number.parseInt(countInput, 10);
+    const n = Number.isNaN(parsed)
+      ? questions.length
+      : Math.min(Math.max(parsed, 1), questions.length);
+    const pool = randomOrder ? shuffle(questions) : questions;
+    const qs = pool.slice(0, n);
+    setSession(qs);
+    setOrders(buildOrders(qs));
+    setAnswers({});
+    setIndex(0);
+    setFinished(false);
+  };
 
-  if (total === 0) {
+  if (questions.length === 0) {
     return (
       <div className="rounded-3xl border border-ink-200 bg-cream-100 p-10 text-center">
         <p className="display text-2xl text-ink-900">Geen vragen gevonden</p>
@@ -110,7 +133,114 @@ export function QuizRunner({
     );
   }
 
-  const correctCount = questions.reduce(
+  // ── Startscherm: aantal + volgorde kiezen ──
+  if (!session) {
+    const parsed = Number.parseInt(countInput, 10);
+    const effective = Number.isNaN(parsed)
+      ? questions.length
+      : Math.min(Math.max(parsed, 1), questions.length);
+    return (
+      <div className="rounded-3xl border border-ink-200 bg-cream-100 p-8 lg:p-12">
+        <h2 className="display text-ink-950 text-2xl">Stel je quiz samen</h2>
+        <p className="mt-2 text-ink-700">
+          Dit beroep heeft {questions.length} vragen. Kies hoeveel je er wilt doen.
+        </p>
+
+        <div className="mt-8">
+          <p className="mono mb-3 text-[11px] uppercase tracking-[0.2em] text-ink-500">
+            Aantal vragen
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            {COUNT_PRESETS.filter((n) => n <= questions.length).map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setCountInput(String(n))}
+                className={cn(
+                  "mono rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] transition",
+                  effective === n && countInput !== ""
+                    ? "bg-ink-950 text-cream-50"
+                    : "bg-cream-200 text-ink-700 hover:bg-cream-300",
+                )}
+              >
+                {n}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setCountInput(String(questions.length))}
+              className={cn(
+                "mono rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] transition",
+                effective === questions.length
+                  ? "bg-ink-950 text-cream-50"
+                  : "bg-cream-200 text-ink-700 hover:bg-cream-300",
+              )}
+            >
+              Alle {questions.length}
+            </button>
+            <input
+              type="number"
+              min={1}
+              max={questions.length}
+              value={countInput}
+              onChange={(e) => setCountInput(e.target.value)}
+              aria-label="Eigen aantal vragen"
+              className="mono w-24 rounded-full border-2 border-ink-200 bg-cream-50 px-4 py-2 text-center text-sm text-ink-900 outline-none transition focus:border-violet"
+            />
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <p className="mono mb-3 text-[11px] uppercase tracking-[0.2em] text-ink-500">
+            Volgorde
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setRandomOrder(true)}
+              className={cn(
+                "mono rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] transition",
+                randomOrder
+                  ? "bg-ink-950 text-cream-50"
+                  : "bg-cream-200 text-ink-700 hover:bg-cream-300",
+              )}
+            >
+              Willekeurig
+            </button>
+            <button
+              type="button"
+              onClick={() => setRandomOrder(false)}
+              className={cn(
+                "mono rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] transition",
+                !randomOrder
+                  ? "bg-ink-950 text-cream-50"
+                  : "bg-cream-200 text-ink-700 hover:bg-cream-300",
+              )}
+            >
+              Oplopend niveau
+            </button>
+          </div>
+          <p className="mono mt-2 text-[11px] text-ink-500">
+            {randomOrder
+              ? `Willekeurige greep van ${effective} vragen, door elkaar gehusseld.`
+              : `De eerste ${effective} vragen in de vaste volgorde (per skill van niveau 1 naar 5).`}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={startQuiz}
+          className="mono mt-10 inline-flex items-center gap-2 rounded-full bg-ink-950 px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.15em] text-cream-50 shadow-sm transition hover:bg-violet"
+        >
+          Start quiz
+          <ArrowRight className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    );
+  }
+
+  const total = session.length;
+  const correctCount = session.reduce(
     (n, q, i) => n + (isCorrect(q, answers[i]) ? 1 : 0),
     0,
   );
@@ -135,16 +265,19 @@ export function QuizRunner({
         <div className="mt-8 flex flex-wrap justify-center gap-2">
           <button
             type="button"
-            onClick={() => {
-              setAnswers({});
-              setIndex(0);
-              setFinished(false);
-              setOrders(buildOrders(questions));
-            }}
+            onClick={startQuiz}
             className="mono inline-flex items-center gap-2 rounded-full bg-ink-950 px-6 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-cream-50 transition hover:bg-violet"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Opnieuw
+          </button>
+          <button
+            type="button"
+            onClick={() => setSession(null)}
+            style={{ color: "var(--ink-800)" }}
+            className="mono inline-flex items-center gap-2 rounded-full bg-cream-200 px-6 py-3 text-xs font-semibold uppercase tracking-[0.15em] transition hover:bg-cream-300"
+          >
+            Andere instellingen
           </button>
           <Link
             href={`/jobs/${jobId}`}
@@ -158,7 +291,7 @@ export function QuizRunner({
     );
   }
 
-  const q = questions[index];
+  const q = session[index];
   const ans = answers[index] ?? { picked: [], revealed: false };
   const order = orders[index] ?? getLetters(q);
   const displayLabelOf = (letter: string) => {
@@ -321,7 +454,9 @@ export function QuizRunner({
                     : `Juiste antwoord: ${displayLabelOf(correct[0] ?? "")}`}
             </div>
             {q.explanation && (
-              <p className="mt-2 text-sm leading-relaxed text-ink-800">{q.explanation}</p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-800">
+                {remapExplanation(q.explanation, displayLabelOf)}
+              </p>
             )}
           </div>
         )}

@@ -208,7 +208,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     optCount += 4;
 
     // For Diagnose ("a,c"), take the first letter; skip multi-correct for this metric
-    const firstCorrect = q.correct_answer.split(",")[0]?.trim() ?? "";
+    const firstCorrect = q.correct_answer?.split(",")[0]?.trim() ?? "";
     const correctLen = optLens[firstCorrect as "a" | "b" | "c" | "d"] ?? 0;
     const maxLen = Math.max(...lens);
     const minLen = Math.min(...lens) || 1;

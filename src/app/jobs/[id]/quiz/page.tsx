@@ -50,8 +50,9 @@ export default async function QuizPage({
             Controleer de <span className="italic text-violet">vragen.</span>
           </h1>
           <p className="text-ink-700 mt-4 text-lg leading-relaxed">
-            Loop door alle vragen van dit beroep. Klik een antwoord en zie meteen
-            of het goed of fout is, inclusief de toelichting.
+            Kies hoeveel vragen je wilt doen en in welke volgorde. Klik een
+            antwoord en zie meteen of het goed of fout is, inclusief de
+            toelichting.
           </p>
         </div>
 
