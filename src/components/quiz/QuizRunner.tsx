@@ -14,6 +14,7 @@ import type { Question, ScoringRule } from "@/lib/types";
 import { TypeBadge, DifficultyBadge } from "@/components/question/TypeBadge";
 import { VariantBadge } from "@/components/question/VariantBadge";
 import { cn } from "@/lib/cn";
+import { QuestionContent } from "@/components/question/QuestionContent";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function parseCorrect(raw: string | null | undefined): string[] {
@@ -369,9 +370,7 @@ export function QuizRunner({
           </p>
         )}
 
-        <h2 className="text-ink-950 text-lg lg:text-xl font-medium leading-relaxed">
-          {q.question}
-        </h2>
+          <QuestionContent text={q.question} />
 
         {/* Opties */}
         <div className="mt-8 space-y-3">

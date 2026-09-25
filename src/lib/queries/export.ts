@@ -3,6 +3,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { humanizeTitle } from "@/lib/text";
 import { REVIEW_STATUS_LABELS } from "@/lib/types";
 import type { ReviewStatus } from "@/lib/types";
+import { candidateQuestionText } from "@/lib/question-presentation";
 
 // Eén platte rij per vraag, klaar voor de Excel-export. Keys = kolom-keys in de
 // route handler. Bewust ALLE vragen (incl. pending/needs_review) met status-
@@ -77,7 +78,7 @@ function mapRow(r: RawRow): ExportRow {
     vraagnr: r.question_number,
     type: TYPE_LABEL[rawType] ?? rawType,
     niveau: r.difficulty,
-    vraag: r.question ?? "",
+    vraag: candidateQuestionText(r.question ?? ""),
     optie_a: opt("a"),
     optie_b: opt("b"),
     optie_c: opt("c"),

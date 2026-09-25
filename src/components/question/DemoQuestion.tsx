@@ -6,6 +6,7 @@ import type { Question, ScoringRule } from "@/lib/types";
 import { TypeBadge, DifficultyBadge } from "./TypeBadge";
 import { VariantBadge } from "./VariantBadge";
 import { cn } from "@/lib/cn";
+import { QuestionContent } from "./QuestionContent";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -110,9 +111,7 @@ export function DemoQuestion({
         </p>
       )}
 
-      <h2 className="display text-ink-950 text-3xl lg:text-4xl leading-[1.15]">
-        {question.question}
-      </h2>
+      <QuestionContent text={question.question} />
 
       {/* ── Options ── */}
       <div className="mt-10 space-y-3">

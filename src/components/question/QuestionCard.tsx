@@ -4,6 +4,7 @@ import { Check, ArrowUpRight } from "lucide-react";
 import type { Question } from "@/lib/types";
 import { TypeBadge, DifficultyBadge } from "./TypeBadge";
 import { cn } from "@/lib/cn";
+import { QuestionContent } from "./QuestionContent";
 
 const ITEM_TYPE_BORDER: Record<string, string> = {
   // Fase 2
@@ -80,9 +81,7 @@ export function QuestionCard({
         </p>
       )}
 
-      <p className="text-ink-950 text-base lg:text-lg leading-relaxed mb-6">
-        {question.question}
-      </p>
+      <QuestionContent text={question.question} className="mb-6" />
 
       <ul className="space-y-2">
         {letters.map((letter) => {
