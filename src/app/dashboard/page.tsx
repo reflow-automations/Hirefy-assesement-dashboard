@@ -10,13 +10,15 @@ import { EscoPanel } from "@/components/dashboard/EscoPanel";
 import { QualityPanel } from "@/components/dashboard/QualityPanel";
 import { SkillsTable } from "@/components/dashboard/SkillsTable";
 import { VariantParity } from "@/components/dashboard/VariantParity";
+import { LearnPanel, UsagePanel } from "@/components/dashboard/RecentChangesPanel";
 import { getDashboardData } from "@/lib/queries/dashboard";
+import { getUsageData } from "@/lib/queries/usage";
 import { BarChart3 } from "lucide-react";
 
 export const revalidate = 3600;
 
 export default async function DashboardPage() {
-  const data = await getDashboardData();
+  const [data, usage] = await Promise.all([getDashboardData(), getUsageData()]);
 
   return (
     <>
@@ -30,7 +32,7 @@ export default async function DashboardPage() {
             </span>
             <span className="chip bg-violet-tint text-violet">
               <span className="block h-1.5 w-1.5 rounded-full bg-violet animate-pulse" />
-              Dashboard · live data
+              Dashboard · catalogusdata
             </span>
           </div>
           <h1 className="display text-ink-950 max-w-3xl fade-up">
@@ -40,8 +42,8 @@ export default async function DashboardPage() {
             className="mt-6 max-w-2xl text-lg text-ink-700 leading-relaxed fade-up"
             style={{ animationDelay: "100ms" }}
           >
-            Alle cijfers achter de catalogus op één plek — pipeline-samenstelling,
-            ESCO-dekking, kwaliteitsindicatoren, en per-skill diepte.
+            Samenstelling en reviewstatus van de vragenbank, het aparte
+            leerbaarheidsblok en geregistreerd modelgebruik per beroep.
           </p>
         </Container>
       </section>
@@ -50,6 +52,17 @@ export default async function DashboardPage() {
       <section>
         <Container size="wide" className="py-2 lg:py-4">
           <HeroStats data={data.totals} />
+        </Container>
+      </section>
+
+      <section>
+        <Container size="wide" className="py-10 lg:py-14 space-y-5">
+          <div>
+            <h2 className="display text-ink-950">Nieuwe <span className="italic text-violet">inzichten</span></h2>
+            <p className="mt-3 max-w-2xl text-sm text-ink-700">De leerbaarheidsvragen en modelkosten staan hier apart van de algemene vraagstatistieken.</p>
+          </div>
+          <LearnPanel jobs={data.learnByJob} />
+          <UsagePanel usage={usage} />
         </Container>
       </section>
 

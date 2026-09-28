@@ -69,31 +69,46 @@ export interface DashboardData {
     a: number;
     b: number;
   }[];
+
+  learnByJob: {
+    jobId: number;
+    title: string;
+    status: string | null;
+    total: number;
+    levels: Record<1 | 2 | 3 | 4 | 5, number>;
+    needsReview: number;
+    smeApproved: number;
+  }[];
 }
 
 export async function getDashboardData(): Promise<DashboardData> {
   const supabase = createServerClient();
+  const questionColumns = "id, skill_id, job_id, variant, item_type, question, options, correct_answer, explanation, audit_status, review_status, difficulty";
 
-  const [jobsRes, skillsRes, questionsRes] = await Promise.all([
-    supabase.from("jobs").select("id, title, sector, esco_raw_data"),
+  const [jobsRes, skillsRes] = await Promise.all([
+    supabase.from("jobs").select("id, title, sector, status, esco_raw_data"),
     supabase.from("skills").select("id, name, job_id, in_esco, audit_status"),
-    supabase
-      .from("questions")
-      .select(
-        "id, skill_id, job_id, variant, item_type, question, options, correct_answer, explanation, audit_status, review_status, difficulty",
-      ),
   ]);
 
   if (jobsRes.error) throw jobsRes.error;
   if (skillsRes.error) throw skillsRes.error;
-  if (questionsRes.error) throw questionsRes.error;
+
+  // PostgREST returns at most 1,000 rows per request. Keep the dashboard
+  // statistics complete when the catalogue grows beyond one page.
+  const questions: Question[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    const page = await supabase.from("questions").select(questionColumns)
+      .order("id", { ascending: true }).range(offset, offset + 999);
+    if (page.error) throw page.error;
+    questions.push(...((page.data ?? []) as unknown as Question[]));
+    if ((page.data ?? []).length < 1000) break;
+  }
 
   const jobs = (jobsRes.data ?? []) as unknown as Pick<
     Job,
-    "id" | "title" | "sector" | "esco_raw_data"
+    "id" | "title" | "sector" | "status" | "esco_raw_data"
   >[];
   const skills = (skillsRes.data ?? []) as unknown as Skill[];
-  const questions = (questionsRes.data ?? []) as unknown as Question[];
 
   // ---- Totals ----
   const jobsCount = jobs.length;
@@ -265,6 +280,25 @@ export async function getDashboardData(): Promise<DashboardData> {
     })
     .sort((a, b) => Math.abs(a.a - a.b) - Math.abs(b.a - b.b));
 
+  const learnByJob = jobs.map((job) => {
+    const learn = questions.filter((q) => q.job_id === job.id && q.item_type === "Learn");
+    const levels: Record<1 | 2 | 3 | 4 | 5, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    for (const q of learn) {
+      if (q.difficulty && q.difficulty >= 1 && q.difficulty <= 5) {
+        levels[q.difficulty as 1 | 2 | 3 | 4 | 5]++;
+      }
+    }
+    return {
+      jobId: job.id,
+      title: job.title,
+      status: job.status,
+      total: learn.length,
+      levels,
+      needsReview: learn.filter((q) => q.review_status === "needs_review").length,
+      smeApproved: learn.filter((q) => q.review_status === "sme_approved").length,
+    };
+  }).filter((job) => job.total > 0).sort((a, b) => b.jobId - a.jobId);
+
   return {
     totals: {
       jobs: jobsCount,
@@ -296,5 +330,6 @@ export async function getDashboardData(): Promise<DashboardData> {
     },
     skillsTable,
     variantParity,
+    learnByJob,
   };
 }
