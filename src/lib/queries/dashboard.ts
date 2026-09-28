@@ -83,7 +83,7 @@ export interface DashboardData {
 
 export async function getDashboardData(): Promise<DashboardData> {
   const supabase = createServerClient();
-  const questionColumns = "id, skill_id, job_id, variant, item_type, question, options, correct_answer, explanation, audit_status, review_status, difficulty";
+  const questionColumns = "id, skill_id, job_id, question_number, variant, item_type, question, options, correct_answer, explanation, audit_status, review_status, difficulty";
 
   const [jobsRes, skillsRes] = await Promise.all([
     supabase.from("jobs").select("id, title, sector, status, esco_raw_data"),
@@ -122,9 +122,15 @@ export async function getDashboardData(): Promise<DashboardData> {
     ? Math.round((questionsCount / skillsCount) * 10) / 10
     : 0;
 
-  // Variant-pairs = min(A,B) counted per skill×question_number — approx as
-  // questions.length/2 since pipeline is designed to produce pairs.
-  const variantPairs = Math.floor(questionsCount / 2);
+  const variantsByQuestion = new Map<string, Set<string>>();
+  for (const q of questions) {
+    const key = `${q.skill_id}:${q.question_number}`;
+    const variants = variantsByQuestion.get(key) ?? new Set<string>();
+    variants.add(q.variant);
+    variantsByQuestion.set(key, variants);
+  }
+  const variantPairs = [...variantsByQuestion.values()]
+    .filter((variants) => variants.has("A") && variants.has("B")).length;
 
   // ---- Difficulty distribution (Fase 2) ----
   const difficultyDistribution: Record<1 | 2 | 3 | 4 | 5, number> = {
