@@ -42,7 +42,7 @@ export function LearnPanel({ jobs }: { jobs: DashboardData["learnByJob"] }) {
 
 export function UsagePanel({ usage }: { usage: UsageData }) {
   if (!usage.available) {
-    return <div className="rounded-3xl bg-cream-100 p-6 ring-1 ring-ink-200"><h3 className="display text-2xl text-ink-950">Modelgebruik</h3><p className="mt-3 text-sm text-ink-700">Kostenregistratie is momenteel niet beschikbaar. Er wordt geen nulbedrag getoond zolang de bron niet gelezen kan worden.</p></div>;
+    return <div className="rounded-3xl bg-cream-100 p-6 ring-1 ring-ink-200"><h3 className="display text-2xl text-ink-950">Claude-gebruik</h3><p className="mt-3 text-sm text-ink-700">Kostenregistratie is momenteel niet beschikbaar. Er wordt geen nulbedrag getoond zolang de bron niet gelezen kan worden.</p></div>;
   }
 
   const rows = usage.rows.filter((row) => row.calls > 0);
@@ -55,12 +55,12 @@ export function UsagePanel({ usage }: { usage: UsageData }) {
   return (
     <div className="rounded-3xl bg-cream-100 p-6 ring-1 ring-ink-200">
       <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-ink-200 pb-5">
-        <div><h3 className="display text-2xl text-ink-950">Modelgebruik</h3><p className="mt-2 text-sm text-ink-700">Geregistreerde modelcalls voor de vragenpipeline.</p></div>
+        <div><h3 className="display text-2xl text-ink-950">Claude-gebruik</h3><p className="mt-2 text-sm text-ink-700">Geregistreerde Claude-calls voor de vragenpipeline. Perplexity is nog niet opgenomen.</p></div>
         <div className="text-right"><strong className="display text-3xl text-violet">{money.format(totalEstimate)}</strong><p className="text-xs text-ink-600">Schatting over geregistreerde calls</p></div>
       </div>
       <div className="grid gap-2 py-4 text-sm text-ink-800 sm:grid-cols-2"><span>{number.format(totalCalls)} calls geregistreerd</span><span>{last ? `Laatste registratie: ${date.format(new Date(last))}` : "Nog geen calls geregistreerd"}</span></div>
       {rows.length > 0 && <div className="overflow-x-auto"><table className="w-full min-w-[620px] text-left text-sm"><thead className="border-b border-ink-200 text-xs text-ink-600"><tr><th className="py-2 font-medium">Beroep</th><th className="py-2 font-medium">Calls</th><th className="py-2 font-medium">Inputtokens</th><th className="py-2 font-medium">Outputtokens</th><th className="py-2 text-right font-medium">Geschat</th></tr></thead><tbody>{rows.map((row) => <tr key={row.jobId} className="border-b border-ink-200/60"><td className="py-3 pr-4"><Link href={`/jobs/${row.jobId}`} className="text-ink-950 underline-offset-4 hover:underline">{row.title}</Link></td><td>{number.format(row.calls)}</td><td>{row.inputTokens == null ? "Onbekend" : number.format(row.inputTokens)}</td><td>{row.outputTokens == null ? "Onbekend" : number.format(row.outputTokens)}</td><td className="text-right">{row.estimatedUsd == null ? "Onbekend" : money.format(row.estimatedUsd)}</td></tr>)}</tbody></table></div>}
-      <p className="mt-5 border-t border-ink-200 pt-4 text-xs leading-relaxed text-ink-600">Dit is een schatting, geen factuur of compleet runbedrag. {incomplete > 0 ? `${incomplete} calls missen de cache-uitsplitsing of andere usagegegevens. ` : ""}{unpriced > 0 ? `${unpriced} calls hebben geen prijs. ` : ""}Interne providerpogingen kunnen ontbreken. De registratie kan achterlopen als de collector niet draait; controleer de datum van de laatste call.</p>
+      <p className="mt-5 border-t border-ink-200 pt-4 text-xs leading-relaxed text-ink-600">Dit bedrag omvat alleen geregistreerde Claude-calls, geen Perplexity, en is geen factuur of compleet runbedrag. {incomplete > 0 ? `${incomplete} calls missen de cache-uitsplitsing of andere usagegegevens. ` : ""}{unpriced > 0 ? `${unpriced} calls hebben geen prijs. ` : ""}Interne providerpogingen kunnen ontbreken. Controleer de datum van de laatste registratie.</p>
     </div>
   );
 }

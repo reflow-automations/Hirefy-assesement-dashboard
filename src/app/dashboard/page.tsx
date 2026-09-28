@@ -43,7 +43,7 @@ export default async function DashboardPage() {
             style={{ animationDelay: "100ms" }}
           >
             Samenstelling en reviewstatus van de vragenbank, het aparte
-            leerbaarheidsblok en geregistreerd modelgebruik per beroep.
+            leerbaarheidsblok en geregistreerd Claude-gebruik per beroep.
           </p>
         </Container>
       </section>
@@ -59,7 +59,7 @@ export default async function DashboardPage() {
         <Container size="wide" className="py-10 lg:py-14 space-y-5">
           <div>
             <h2 className="display text-ink-950">Nieuwe <span className="italic text-violet">inzichten</span></h2>
-            <p className="mt-3 max-w-2xl text-sm text-ink-700">De leerbaarheidsvragen en modelkosten staan hier apart van de algemene vraagstatistieken.</p>
+            <p className="mt-3 max-w-2xl text-sm text-ink-700">De leerbaarheidsvragen en geregistreerde Claude-kosten staan hier apart van de algemene vraagstatistieken.</p>
           </div>
           <LearnPanel jobs={data.learnByJob} />
           <UsagePanel usage={usage} />
