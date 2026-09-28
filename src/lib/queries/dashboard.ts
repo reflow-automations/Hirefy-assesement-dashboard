@@ -74,6 +74,8 @@ export interface DashboardData {
     jobId: number;
     title: string;
     status: string | null;
+    skillCount: number;
+    questionCount: number;
     total: number;
     levels: Record<1 | 2 | 3 | 4 | 5, number>;
     needsReview: number;
@@ -298,6 +300,8 @@ export async function getDashboardData(): Promise<DashboardData> {
       jobId: job.id,
       title: job.title,
       status: job.status,
+      skillCount: skills.filter((skill) => skill.job_id === job.id).length,
+      questionCount: questions.filter((q) => q.job_id === job.id).length,
       total: learn.length,
       levels,
       needsReview: learn.filter((q) => q.review_status === "needs_review").length,

@@ -12,13 +12,18 @@ import { SkillsTable } from "@/components/dashboard/SkillsTable";
 import { VariantParity } from "@/components/dashboard/VariantParity";
 import { LearnPanel, UsagePanel } from "@/components/dashboard/RecentChangesPanel";
 import { getDashboardData } from "@/lib/queries/dashboard";
-import { getUsageData } from "@/lib/queries/usage";
+import { getUsageData, parseUsagePeriod } from "@/lib/queries/usage";
 import { BarChart3 } from "lucide-react";
 
 export const revalidate = 3600;
 
-export default async function DashboardPage() {
-  const [data, usage] = await Promise.all([getDashboardData(), getUsageData()]);
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ periode?: string | string[] }>;
+}) {
+  const period = parseUsagePeriod((await searchParams).periode);
+  const [data, usage] = await Promise.all([getDashboardData(), getUsageData(period)]);
 
   return (
     <>
@@ -62,7 +67,7 @@ export default async function DashboardPage() {
             <p className="mt-3 max-w-2xl text-sm text-ink-700">De leerbaarheidsvragen en geregistreerde modelkosten staan hier apart van de algemene vraagstatistieken.</p>
           </div>
           <LearnPanel jobs={data.learnByJob} />
-          <UsagePanel usage={usage} />
+          <UsagePanel usage={usage} period={period} />
         </Container>
       </section>
 

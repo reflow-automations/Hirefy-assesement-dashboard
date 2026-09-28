@@ -131,8 +131,8 @@ const REVIEW_LABEL: Record<string, string> = {
   pending:          "Nog te valideren",
   ai_validated:     "AI gevalideerd",
   needs_review:     "Handmatig review",
-  sme_approved:     "SME goedgekeurd",
-  sme_rejected:     "SME afgewezen",
+  sme_approved:     "Vakinhoudelijk goedgekeurd",
+  sme_rejected:     "Vakinhoudelijk afgewezen",
   generation_failed:"Generatie fout",
   unknown:          "Onbekend",
 };

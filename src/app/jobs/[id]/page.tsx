@@ -11,6 +11,7 @@ import { getJob, safeEsco } from "@/lib/queries/jobs";
 import { listSkillsByJob } from "@/lib/queries/skills";
 import { humanizeTitle } from "@/lib/text";
 import { MetricTile } from "@/components/viz/MetricTile";
+import { describeJobStatus } from "@/lib/job-status";
 
 export const revalidate = 3600;
 
@@ -31,6 +32,12 @@ export default async function JobDetailPage({
   if (!job) notFound();
   const esco = safeEsco(job.esco_raw_data);
   const questionTotal = skills.reduce((a, s) => a + s.question_count, 0);
+  const status = describeJobStatus({
+    id: job.id,
+    status: job.status,
+    skillCount: skills.length,
+    questionCount: questionTotal,
+  });
 
   return (
     <>
@@ -47,12 +54,12 @@ export default async function JobDetailPage({
             <MetricTile label="Skills" value={skills.length} accent="teal" />
             <MetricTile label="Vragen" value={questionTotal} accent="ochre" />
             <MetricTile label="ESCO-items" value={esco.length} accent="terracotta" />
-            <MetricTile
-              label="Status"
-              value={job.status?.replace(/_/g, " ") ?? "—"}
-              accent="violet"
-            />
+            <div className="rounded-2xl bg-violet-tint p-6 ring-1 ring-violet/30">
+              <span className="mono text-[10px] uppercase tracking-[0.18em] text-ink-700">Status</span>
+              <strong className="mt-3 block text-2xl font-medium leading-tight text-violet">{status.label}</strong>
+            </div>
           </div>
+          {status.explanation && <div className="mt-6 max-w-4xl rounded-2xl bg-ochre-tint p-5 ring-1 ring-ochre/30"><p className="text-sm leading-relaxed text-ink-800">{status.explanation}</p></div>}
         </Container>
       </section>
 
