@@ -10,6 +10,7 @@ export interface UsageRow {
   estimatedUsd: number | null;
   incompleteCalls: number;
   unpricedCalls: number;
+  firstRecordedAt: string | null;
   lastRecordedAt: string | null;
 }
 
@@ -75,13 +76,14 @@ export async function getUsageData(period: UsagePeriod): Promise<UsageData> {
       const jobId = call.job_id == null ? null : Number(call.job_id);
       const row = rows.get(jobId) ?? {
         jobId,
-        title: jobId == null ? "Niet aan beroep gekoppeld" : titles.get(jobId) ?? `Job ${jobId}`,
+        title: jobId == null ? "Testkosten (proefruns, niet aan een beroep gekoppeld)" : titles.get(jobId) ?? `Job ${jobId}`,
         calls: 0,
         inputTokens: null,
         outputTokens: null,
         estimatedUsd: null,
         incompleteCalls: 0,
         unpricedCalls: 0,
+        firstRecordedAt: null,
         lastRecordedAt: null,
       };
       row.calls++;
@@ -90,6 +92,7 @@ export async function getUsageData(period: UsagePeriod): Promise<UsageData> {
       if (call.estimated_usd != null) row.estimatedUsd = (row.estimatedUsd ?? 0) + Number(call.estimated_usd);
       if (call.usage_quality !== "reported") row.incompleteCalls++;
       if (call.estimated_usd == null) row.unpricedCalls++;
+      if (!row.firstRecordedAt || call.started_at < row.firstRecordedAt) row.firstRecordedAt = call.started_at;
       if (!row.lastRecordedAt || call.started_at > row.lastRecordedAt) row.lastRecordedAt = call.started_at;
       rows.set(jobId, row);
 
@@ -107,6 +110,7 @@ export async function getUsageData(period: UsagePeriod): Promise<UsageData> {
   return {
     available: true,
     providers: [...providers.values()],
-    rows: [...rows.values()].sort((a, b) => (b.jobId ?? -1) - (a.jobId ?? -1)),
+    // Meest recente kosten bovenaan, zodat nieuwe runs en proeven direct zichtbaar zijn.
+    rows: [...rows.values()].sort((a, b) => (b.lastRecordedAt ?? "").localeCompare(a.lastRecordedAt ?? "") || (b.jobId ?? -1) - (a.jobId ?? -1)),
   };
 }
